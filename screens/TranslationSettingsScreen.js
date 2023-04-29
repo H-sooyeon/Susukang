@@ -21,9 +21,9 @@ const Language = [
 ];
 
 const Category = [
-  {label: '소프트웨어 및 ICT', value: '1'},
+  {label: '항만', value: '1'},
   {label: '회계', value: '2'},
-  {label: '항만', value: '3'},
+  {label: '소프트웨어 및 ICT', value: '3'},
 ];
 
 const TranslationSettingsScreen = ({navigation}) => {
@@ -35,7 +35,7 @@ const TranslationSettingsScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <View style={styles.logo}>
         <Text style={styles.logoText}>Susukang</Text>
       </View>

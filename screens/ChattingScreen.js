@@ -1,9 +1,10 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, StatusBar} from 'react-native';
 
 const ChattingScreen = ({route, navigation}) => {
   return (
     <View>
+      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <Text>Hello! This is Chatting Screen</Text>
       <Text>selected language: {route.params.languageName}</Text>
       <Text>selected languageNumber: {route.params.languageNumber}</Text>
