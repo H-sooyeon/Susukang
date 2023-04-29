@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "896956977171",
+    "project_id": "susukang-64a24",
+    "storage_bucket": "susukang-64a24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896956977171:android:b037aacfc52583afdb2fe6",
+        "android_client_info": {
+          "package_name": "com.susukang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "896956977171-fse0pf9frp674d34n9jh1u8efuc3l97b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.susukang",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "896956977171-tmgapotbaovtfovqv39ht1l4fv12a9gh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA45H5ksh6n0y-D5BnrtVyZpLKiNK1aK4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "896956977171-tmgapotbaovtfovqv39ht1l4fv12a9gh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
