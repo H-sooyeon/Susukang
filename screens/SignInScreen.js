@@ -55,7 +55,7 @@ const SignInScreen = ({navigation, route}) => {
       //   setUser(profile);
       // }
 
-      navigation.navigate('Minutes', {uid: user.uid});
+      navigation.navigate('MainTabScreen', {uid: user.uid});
     } catch (e) {
       const message = {
         'auth/email-already-in-use': '이미 가입된 이메일입니다.',
