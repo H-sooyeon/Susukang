@@ -37,7 +37,7 @@ const TranslationSettingsScreen = ({navigation}) => {
     <View style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <View style={styles.logo}>
-        <Text style={styles.logoText}>Susukang</Text>
+        <Text style={styles.logoText}>옵션을 선택해주세요.</Text>
       </View>
       <View style={{backgroundColor: '#fff', padding: 20, borderRadius: 15}}>
         <Dropdown
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logoText: {
-    fontSize: 30,
+    fontSize: 20,
     color: 'white',
   },
   dropdown: {
