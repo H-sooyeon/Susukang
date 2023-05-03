@@ -1,18 +1,26 @@
 import React from 'react';
-import {Button, Text, View, StatusBar} from 'react-native';
+import {Button, Text, View, StatusBar, StyleSheet} from 'react-native';
+import Minute from '../components/Minute';
+import Empty from '../components/Empty';
 
 const MinutesScreen = ({route, navigation}) => {
   return (
-    <View>
+    <View style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <Button
-        title="Go Setting Screen"
+        title="옵션으로"
         onPress={() => navigation.navigate('SettingOption')}
       />
-      <Text>Hello! This is Minutes Screen</Text>
-      <Text>Your UserId = {route.params.uid}</Text>
+      <Empty />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+});
 
 export default MinutesScreen;
