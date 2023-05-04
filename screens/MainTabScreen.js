@@ -47,7 +47,7 @@ const MainTabScreen = () => {
         }}
         options={{
           tabBarIcon: ({color, size}) => (
-            <Icon name="chat" size={size} color={color} />
+            <Icon name="forum" size={size} color={color} />
           ),
           headerTitleAlign: 'center',
         }}
