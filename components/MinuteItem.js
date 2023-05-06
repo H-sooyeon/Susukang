@@ -1,21 +1,50 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useNavigation} from '@react-navigation/native';
 
-const MinuteItem = ({id, title, department, date, onRemove}) => {
+const MinuteItem = ({
+  id,
+  title,
+  department,
+  date,
+  content,
+  onRemove,
+  datas,
+}) => {
+  const navigation = useNavigation();
+
+  const onPress = () => {};
+
   return (
     <View style={styles.item}>
       <TouchableOpacity style={styles.Icon}>
         <Icon name="arrow-circle-down" size={30} color="#1976D2" />
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <View style={styles.bottomData}>
-          <Text style={styles.department}>{department}</Text>
-          <Text style={styles.date}>{date}</Text>
-        </View>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('openFile', {
+              id: id,
+              title: title,
+              department: department,
+              date: date,
+              content: content,
+              datas: datas,
+            })
+          }>
+          <Text style={styles.title}>{title}</Text>
+          <View style={styles.bottomData}>
+            <Text style={styles.department}>{department}</Text>
+            <Text style={styles.date}>{date}</Text>
+          </View>
+        </TouchableOpacity>
       </View>
-      <View style={styles.rightIcon}>
+      <View style={styles.rightIcon} onPress={onPress}>
+        <TouchableOpacity style={[styles.summary, {marginRight: 5}]}>
+          <Icon name="edit" size={30} />
+          <Text style={styles.summaryText}>수정</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.summary, {marginRight: 5}]}>
           <Icon name="wysiwyg" size={30} color="#C0C0C0" />
           <Text style={styles.summaryText}>요약</Text>
@@ -44,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'center',
-    marginLeft: 16,
+    marginLeft: 10,
   },
   textContainer: {
     flex: 1,
