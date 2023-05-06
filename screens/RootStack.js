@@ -1,4 +1,5 @@
 import React from 'react';
+import {TouchableOpacity} from 'react-native';
 import {useUserContext} from '../contexts/UserContext';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainTab from './MainTab';
@@ -6,6 +7,8 @@ import SignInScreen from './SignInScreen';
 import TranslationSettingsScreen from './TranslationSettingsScreen';
 import ChattingScreen from './ChattingScreen';
 import MainTabScreen from './MainTabScreen';
+import OpenMinute from './OpenMinue';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +53,14 @@ const RootStack = () => {
         component={ChattingScreen}
         options={{
           title: '번역',
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Stack.Screen
+        name="openFile"
+        component={OpenMinute}
+        options={{
+          title: '문서',
           headerTitleAlign: 'center',
         }}
       />
