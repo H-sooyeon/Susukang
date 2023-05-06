@@ -4,6 +4,16 @@ import Empty from '../components/Empty';
 import MinuteList from '../components/MinuteList';
 import AddMinue from '../components/AddMinute';
 
+const getDate = today => {
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+
+  const date = `${year}.${month}.${day}`;
+
+  return date;
+};
+
 const MinutesScreen = ({navigation}) => {
   const [datas, setDatas] = useState([
     {
@@ -11,26 +21,20 @@ const MinutesScreen = ({navigation}) => {
       title: '스마트물류 프로젝트 오티',
       department: '소프트웨어공학과',
       date: '2023.4.5',
+      content:
+        'hello my name is sooyeon hello my name is sooyeon hello my name is sooyeon',
     },
     {
       id: 2,
       title: '카카오테크캠퍼스',
       department: '카카오',
       date: '2023.4.10',
+      content:
+        'hello this is page is modifed minute page hello this is page is modifed minute page',
     },
   ]);
 
   const today = new Date();
-
-  const getDate = today => {
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const day = today.getDate();
-
-    const date = `${year}.${month}.${day}`;
-
-    return date;
-  };
 
   const onRemove = id => {
     const nextDatas = datas.filter(data => data.id !== id);
@@ -39,15 +43,18 @@ const MinutesScreen = ({navigation}) => {
     // 서버에 삭제한 문서 전달하는 코드 추가
   };
 
-  const onInsert = inputTitle => {
+  const onInsert = (inputTitle, inputDepartment) => {
     const nextId =
       datas.length > 0 ? Math.max(...datas.map(data => data.id)) + 1 : 1;
+    console.log(today);
+    console.log(getDate(today));
 
     const data = {
       id: nextId,
       title: inputTitle,
-      department: '소속',
+      department: inputDepartment,
       date: getDate(today),
+      content: '',
     };
 
     setDatas(datas.concat(data));
@@ -60,7 +67,12 @@ const MinutesScreen = ({navigation}) => {
       {datas.length === 0 ? (
         <Empty />
       ) : (
-        <MinuteList datas={datas} onRemove={onRemove} />
+        <MinuteList
+          datas={datas}
+          onRemove={onRemove}
+          getdate={getDate}
+          today={today}
+        />
       )}
       <KeyboardAvoidingView>
         <AddMinue style={{flex: 1}} onInsert={onInsert} />
