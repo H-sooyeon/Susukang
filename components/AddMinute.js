@@ -10,10 +10,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const AddMinue = ({onInsert}) => {
   const [title, setTitle] = useState('');
+  const [department, setDepartment] = useState('');
 
   const onPress = () => {
-    onInsert(title);
+    onInsert(title, department);
     setTitle('');
+    setDepartment('');
     Keyboard.dismiss();
   };
 
