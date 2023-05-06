@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, StatusBar, StyleSheet, FlatList, Text} from 'react-native';
+import {View, StatusBar, StyleSheet, FlatList} from 'react-native';
 import MinuteItem from './MinuteItem';
 
-const MinuteList = ({datas, onRemove}) => {
+const MinuteList = ({datas, onRemove, getDate, today}) => {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
@@ -18,6 +18,10 @@ const MinuteList = ({datas, onRemove}) => {
               department={item.department}
               date={item.date}
               onRemove={onRemove}
+              content={item.content}
+              getDate={getDate}
+              today={today}
+              datas={datas}
             />
           </View>
         )}
