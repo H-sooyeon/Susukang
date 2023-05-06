@@ -1,7 +1,16 @@
-import React, {useState} from 'react';
-import {View, StatusBar, StyleSheet, KeyboardAvoidingView} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  StatusBar,
+  StyleSheet,
+  Alert,
+  Keyboard,
+  TouchableOpacity,
+} from 'react-native';
 import Empty from '../components/Empty';
 import MinuteList from '../components/MinuteList';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Dialog from 'react-native-dialog';
 import AddMinue from '../components/AddMinute';
 
 const getDate = today => {
@@ -15,6 +24,9 @@ const getDate = today => {
 };
 
 const MinutesScreen = ({navigation}) => {
+  const [title, setTitle] = useState('');
+  const [department, setDepartment] = useState('');
+  const [visible, setVisible] = useState(false);
   const [datas, setDatas] = useState([
     {
       id: 1,
@@ -34,6 +46,61 @@ const MinutesScreen = ({navigation}) => {
     },
   ]);
 
+  const showDialog = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  const handleOk = () => {
+    if (title === '') {
+      Alert.alert('문서 추가', '제목은 공백으로 둘 수 없습니다.');
+
+      setVisible(false);
+    } else {
+      onInsert(title, department);
+      // 서버에 새로운 문서 추가 코드 추가
+      setVisible(false);
+    }
+    setTitle('');
+    setDepartment('');
+    Keyboard.dismiss();
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View>
+          <TouchableOpacity onPress={showDialog} style={styles.addButton}>
+            <Icon name="add" size={28} color="black" />
+          </TouchableOpacity>
+          <View>
+            <Dialog.Container visible={visible}>
+              <Dialog.Title>문서 추가</Dialog.Title>
+              <Dialog.Description>
+                문서 제목과 소속을 입력해주세요.
+              </Dialog.Description>
+              <Dialog.Input
+                placeholder="문서 제목"
+                value={title}
+                onChangeText={setTitle}
+              />
+              <Dialog.Input
+                placeholder="소속"
+                value={department}
+                onChangeText={setDepartment}
+              />
+              <Dialog.Button label="취소" onPress={handleCancel} />
+              <Dialog.Button label="확인" onPress={handleOk} />
+            </Dialog.Container>
+          </View>
+        </View>
+      ),
+    });
+  });
+
   const today = new Date();
 
   const onRemove = id => {
@@ -43,11 +110,19 @@ const MinutesScreen = ({navigation}) => {
     // 서버에 삭제한 문서 전달하는 코드 추가
   };
 
+  const onToggle = (id, title, department, date) => {
+    setDatas(datas =>
+      datas.map(data =>
+        data.id === id
+          ? {...data, title: title, department: department, date: date}
+          : data,
+      ),
+    );
+  };
+
   const onInsert = (inputTitle, inputDepartment) => {
     const nextId =
       datas.length > 0 ? Math.max(...datas.map(data => data.id)) + 1 : 1;
-    console.log(today);
-    console.log(getDate(today));
 
     const data = {
       id: nextId,
@@ -70,13 +145,12 @@ const MinutesScreen = ({navigation}) => {
         <MinuteList
           datas={datas}
           onRemove={onRemove}
-          getdate={getDate}
+          getDate={getDate}
           today={today}
+          onToggle={onToggle}
         />
       )}
-      <KeyboardAvoidingView>
-        <AddMinue style={{flex: 1}} onInsert={onInsert} />
-      </KeyboardAvoidingView>
+      <AddMinue onInsert={onInsert} />
     </View>
   );
 };
@@ -99,6 +173,9 @@ const styles = StyleSheet.create({
   },
   itemButton: {
     flex: 1,
+  },
+  addButton: {
+    marginRight: 16,
   },
 });
 
