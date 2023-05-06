@@ -7661,7 +7661,7 @@ react-is@^17.0.1:
 
 react-native-animatable@1.3.3:
   version "1.3.3"
-  resolved "https://registry.yarnpkg.com/react-native-animatable/-/react-native-animatable-1.3.3.tgz#a13a4af8258e3bb14d0a9d839917e9bb9274ec8a"
+  resolved "https://registry.npmjs.org/react-native-animatable/-/react-native-animatable-1.3.3.tgz"
   integrity sha512-2ckIxZQAsvWn25Ho+DK3d1mXIgj7tITkrS4pYDvx96WyOttSvzzFeQnM2od0+FUMzILbdHDsDEqZvnz1DYNQ1w==
   dependencies:
     prop-types "^15.7.2"
@@ -7675,6 +7675,11 @@ react-native-codegen@^0.71.5:
     flow-parser "^0.185.0"
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
+
+react-native-dialog-input@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/react-native-dialog-input/-/react-native-dialog-input-1.0.8.tgz"
+  integrity sha512-W9YNMt6r+rUUMDEkOR1WMuGfSJw97ujB8H1xp8TjJTOnYVSlsf4aEP6t+J8tVk3XZaDcTawXgDjxH6E1WVWRog==
 
 react-native-dialog@^9.3.0:
   version "9.3.0"
@@ -7703,14 +7708,19 @@ react-native-gradle-plugin@^0.71.17:
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.17.tgz"
   integrity sha512-OXXYgpISEqERwjSlaCiaQY6cTY5CH6j73gdkWpK0hedxtiWMWgH+i5TOi4hIGYitm9kQBeyDu+wim9fA8ROFJA==
 
+react-native-html-to-pdf@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/react-native-html-to-pdf/-/react-native-html-to-pdf-0.12.0.tgz#2b467296f85c9c9783a7288b19722a7028dcbcb8"
+  integrity sha512-Yb5WO9SfF86s5Yv9PqXQ7fZDr9zZOJ+6jtweT9zFLraPNHWX7pSxe2dSkeg3cGiNrib65ZXGN6ksHymfYLFSSg==
+
 react-native-ionicons@^4.6.5:
   version "4.6.5"
-  resolved "https://registry.yarnpkg.com/react-native-ionicons/-/react-native-ionicons-4.6.5.tgz#b792ec8896381e67ff237eba955e38afe7ceb7a4"
+  resolved "https://registry.npmjs.org/react-native-ionicons/-/react-native-ionicons-4.6.5.tgz"
   integrity sha512-s2Ia7M5t609LE9LWygMj3ALVPUlKhK7R9XcMb67fP4EYJv0oLcwg5pc+8ftv9XXaUuTW/WgL3zJlBYxAvtvMJg==
 
 react-native-modal@^13.0.1:
   version "13.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-13.0.1.tgz#691f1e646abb96fa82c1788bf18a16d585da37cd"
+  resolved "https://registry.npmjs.org/react-native-modal/-/react-native-modal-13.0.1.tgz"
   integrity sha512-UB+mjmUtf+miaG/sDhOikRfBOv0gJdBU2ZE1HtFWp6UixW9jCk/bhGdHUgmZljbPpp0RaO/6YiMmQSSK3kkMaw==
   dependencies:
     prop-types "^15.6.2"
@@ -7862,7 +7872,7 @@ react-native@0.71.7:
 
 react-navigation-header-buttons@^10.0.0:
   version "10.0.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-header-buttons/-/react-navigation-header-buttons-10.0.0.tgz#a685352dfa6a6c62df7c81a5599ecbb37fe7bf43"
+  resolved "https://registry.npmjs.org/react-navigation-header-buttons/-/react-navigation-header-buttons-10.0.0.tgz"
   integrity sha512-45jLyyMB/2uMmDm+SWcUrDJLXxiVeaVtbHf1cgmzt4eS/C1AxOyG1pimIFxQK8EoDbZDV24mqAX13/UCwqhWpw==
   dependencies:
     invariant ">=2"
