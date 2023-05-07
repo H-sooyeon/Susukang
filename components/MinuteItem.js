@@ -1,8 +1,17 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 import Dialog from 'react-native-dialog';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 const MinuteItem = ({
   id,
@@ -20,6 +29,7 @@ const MinuteItem = ({
   const [visible, setVisible] = useState(false);
   const [itemTitle, setitemTitle] = useState(title);
   const [itemDepartment, setitemDepartment] = useState(department);
+  const [filePath, setFilePath] = useState('');
 
   const showDialog = () => {
     setVisible(true);
@@ -44,11 +54,51 @@ const MinuteItem = ({
     setVisible(false);
   };
 
-  const DownFile = () => {};
+  const isPermitted = async () => {
+    if (Platform.OS === 'android') {
+      console.log('android');
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'External Storage Write Permission',
+            message: 'App needs access to Storage data',
+          },
+        );
+        console.log(PermissionsAndroid.RESULTS.GRANTED);
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        alert('Write permission err', err);
+        return false;
+      }
+    } else {
+      return true;
+    }
+  };
+
+  const createPDF = async () => {
+    const fileTitle = department !== '' ? `${title}_${department}` : `${title}`;
+    //if (await isPermitted()) {
+    let options = {
+      //Content to print
+      html: `<h1 style="text-align: center;"><strong>${title}</strong></h1><p style="text-align: center;"><strong>${department}</strong></p><p style="margin: 16;">${content}</p>`,
+      //File Name
+      fileName: `${fileTitle}`,
+      //File directory
+      directory: 'docs',
+    };
+    let file = await RNHTMLtoPDF.convert(options);
+
+    setFilePath(file.filePath);
+    const path = JSON.stringify(file.filePath);
+    Alert.alert('다운 받은 파일 경로', `${path}`);
+    //Alert.alert('파일 다운', '다운 되었습니다.');
+    //}
+  };
 
   return (
     <View style={styles.item}>
-      <TouchableOpacity style={styles.Icon} onPress={DownFile}>
+      <TouchableOpacity style={styles.Icon} onPress={createPDF}>
         <Icon name="arrow-circle-down" size={30} color="#1976D2" />
       </TouchableOpacity>
       <View style={styles.textContainer}>
