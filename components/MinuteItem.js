@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
   date: {
     marginLeft: 3,
   },
-  modifyIcon: {},
   summary: {
     alignItems: 'center',
   },
