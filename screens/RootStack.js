@@ -50,7 +50,7 @@ const RootStack = () => {
         name="Chatting"
         component={ChattingScreen}
         options={{
-          title: '번역',
+          title: '대화 번역',
           headerTitleAlign: 'center',
         }}
       />
@@ -59,7 +59,7 @@ const RootStack = () => {
         component={OpenMinute}
         options={{
           title: '문서',
-          headerTitleAlign: 'center',
+          headerTitleAlign: 'left',
         }}
       />
     </Stack.Navigator>
