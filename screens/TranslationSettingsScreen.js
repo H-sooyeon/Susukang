@@ -51,8 +51,8 @@ const TranslationSettingsScreen = ({navigation}) => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Select Language' : '...'}
-          searchPlaceholder="Search..."
+          placeholder={!isFocus ? '언어 선택' : '...'}
+          searchPlaceholder="검색"
           value={languageData}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
@@ -73,8 +73,8 @@ const TranslationSettingsScreen = ({navigation}) => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Select Category' : '...'}
-          searchPlaceholder="Search..."
+          placeholder={!isFocus ? '분야 선택' : '...'}
+          searchPlaceholder="검색"
           value={categoryData}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
