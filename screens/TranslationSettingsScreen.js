@@ -105,6 +105,8 @@ const TranslationSettingsScreen = ({navigation}) => {
                           categoryName: categoryName,
                           languageNumber: languageData,
                           categoryNumber: categoryData,
+                          Language: Language,
+                          Category: Category,
                         });
 
                         setLanguageData(null);
