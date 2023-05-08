@@ -11,7 +11,7 @@ import Dialog from 'react-native-dialog';
 
 const ChattingScreen = ({route, navigation}) => {
   const [language, setLanguage] = useState(route.params.languageName);
-  const [category, setCategory] = useState(route.params.Category);
+  const [category, setCategory] = useState(route.params.categoryName);
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [visible, setVisible] = useState(false);
@@ -66,8 +66,8 @@ const ChattingScreen = ({route, navigation}) => {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocus ? 'Select Language' : '...'}
-            searchPlaceholder="Search..."
+            placeholder={!isFocus ? '언어 선택' : '...'}
+            searchPlaceholder="검색"
             value={language}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
@@ -87,8 +87,8 @@ const ChattingScreen = ({route, navigation}) => {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocus ? 'Select Category' : '...'}
-            searchPlaceholder="Search..."
+            placeholder={!isFocus ? '분야 선택' : '...'}
+            searchPlaceholder="검색"
             value={category}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
