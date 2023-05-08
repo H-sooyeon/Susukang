@@ -124,7 +124,7 @@ const MinuteItem = ({
         <TouchableOpacity
           style={[styles.summary, {marginRight: 5}]}
           onPress={showDialog}>
-          <Icon name="edit" size={30} />
+          <Icon name="edit" size={30} style={styles.modifyIcon} />
           <Text style={styles.summaryText}>수정</Text>
         </TouchableOpacity>
         <View>
@@ -160,7 +160,7 @@ const MinuteItem = ({
 const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
-    padding: 16,
+    padding: 13,
   },
   Icon: {
     alignItems: 'center',
@@ -184,7 +184,16 @@ const styles = StyleSheet.create({
   bottomData: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
+  department: {
+    marginRight: 3,
+    flexShrink: 1,
+  },
+  date: {
+    marginLeft: 3,
+  },
+  modifyIcon: {},
   summary: {
     alignItems: 'center',
   },
