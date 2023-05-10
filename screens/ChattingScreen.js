@@ -5,9 +5,12 @@ import {
   StatusBar,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import Dialog from 'react-native-dialog';
+import AddChatting from '../components/AddChatting';
+import SpeechBubble from '../components/SpeechBubble';
 
 const ChattingScreen = ({route, navigation}) => {
   const [language, setLanguage] = useState(route.params.languageName);
@@ -15,17 +18,28 @@ const ChattingScreen = ({route, navigation}) => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [visible, setVisible] = useState(false);
+  const [saveVisible, setSaveVisible] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
+
+  const [fileTitle, setFileTitle] = useState('');
+  const [fileDepartment, setFileDepartment] = useState('');
+  const [fileContent, setFileContent] = useState('');
 
   useEffect(() => {
     navigation.setOptions({
-      title: `${language} ${category}`,
+      title: `${language}  |  ${category}`,
+      headerTitleAlign: 'left',
     });
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={showDialog}>
-          <Text style={styles.languageChange}>변경</Text>
-        </TouchableOpacity>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={showDialog}>
+            <Text style={styles.headerButton}>변경</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={showSave}>
+            <Text style={[styles.headerButton, {marginLeft: 12}]}>저장</Text>
+          </TouchableOpacity>
+        </View>
       ),
       headerTitleStyle: {
         flexShrink: 1,
@@ -40,6 +54,7 @@ const ChattingScreen = ({route, navigation}) => {
 
   const handleCancel = () => {
     setVisible(false);
+    setSaveVisible(false);
   };
 
   const handleOk = () => {
@@ -49,11 +64,26 @@ const ChattingScreen = ({route, navigation}) => {
     setVisible(false);
   };
 
+  const showSave = () => {
+    setSaveVisible(true);
+  };
+
+  const handleSaveOk = () => {
+    setFileTitle('');
+    setFileDepartment('');
+    console.log('파일 저장 완료!');
+    // 서버에 문서 저장하는 코드 추가
+    setSaveVisible(false);
+    Alert.alert('회의록에 문서 저장 완료!');
+  };
+
   return (
     <View style={styles.Container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-      <View style={{backgroundColor: '#fff', padding: 20, borderRadius: 15}}>
-        <Dialog.Container visible={visible}>
+      <View>
+        <Dialog.Container
+          visible={visible}
+          style={{backgroundColor: '#fff', padding: 20, borderRadius: 15}}>
           <Dialog.Title style={styles.changeTitle}>언어 설정 변경</Dialog.Title>
           <Dropdown
             style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
@@ -101,20 +131,45 @@ const ChattingScreen = ({route, navigation}) => {
           <Dialog.Button label="확인" onPress={handleOk} />
         </Dialog.Container>
       </View>
+      <View>
+        <Dialog.Container
+          visible={saveVisible}
+          style={{backgroundColor: '#fff', padding: 20, borderRadius: 15}}>
+          <Dialog.Title style={styles.changeTitle}>문서 저장</Dialog.Title>
+          <Dialog.Input
+            placeholder="문서 제목"
+            value={fileTitle}
+            onChangeText={setFileTitle}
+          />
+          <Dialog.Input
+            placeholder="소속"
+            value={fileDepartment}
+            onChangeText={setFileDepartment}
+          />
+          <Dialog.Button label="취소" onPress={handleCancel} />
+          <Dialog.Button label="확인" onPress={handleSaveOk} />
+        </Dialog.Container>
+      </View>
+      <View style={styles.chatting}>
+        <SpeechBubble text="hello" direction="right" style={styles.bubble} />
+        <SpeechBubble text="hi~" direction="left" />
+      </View>
+      <AddChatting />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   Container: {
-    alignItems: 'center',
-    flexDirection: 'column',
     backgroundColor: 'white',
     flex: 1,
   },
-  languageChange: {
+  header: {
+    flexDirection: 'row',
+  },
+  headerButton: {
     color: '#1976D2',
-    marginLeft: 3,
+    marginLeft: 5,
   },
   title: {
     marginTop: 10,
@@ -151,6 +206,11 @@ const styles = StyleSheet.create({
   changeTitle: {
     marginBottom: 13,
   },
+  chatting: {
+    flex: 1,
+    marginTop: 15,
+  },
+  bubble: {},
 });
 
 export default ChattingScreen;
