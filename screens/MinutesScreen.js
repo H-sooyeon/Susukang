@@ -11,7 +11,6 @@ import Empty from '../components/Empty';
 import MinuteList from '../components/MinuteList';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Dialog from 'react-native-dialog';
-import AddMinue from '../components/AddMinute';
 
 const getDate = today => {
   const year = today.getFullYear();
@@ -150,7 +149,6 @@ const MinutesScreen = ({navigation}) => {
           onToggle={onToggle}
         />
       )}
-      <AddMinue onInsert={onInsert} />
     </View>
   );
 };
