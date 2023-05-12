@@ -6,11 +6,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  TextInput,
+  Keyboard,
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import Dialog from 'react-native-dialog';
-import AddChatting from '../components/AddChatting';
-import SpeechBubble from '../components/SpeechBubble';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import AddChattings from '../components/AddChatting';
 
 const ChattingScreen = ({route, navigation}) => {
   const [language, setLanguage] = useState(route.params.languageName);
@@ -23,7 +25,12 @@ const ChattingScreen = ({route, navigation}) => {
 
   const [fileTitle, setFileTitle] = useState('');
   const [fileDepartment, setFileDepartment] = useState('');
-  const [fileContent, setFileContent] = useState('');
+
+  const [messageText, setMessageText] = useState('');
+  const [Messages, setMessages] = useState([
+    {id: 1, text: 'hello'},
+    {id: 2, text: 'my name is...'},
+  ]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -74,7 +81,31 @@ const ChattingScreen = ({route, navigation}) => {
     console.log('파일 저장 완료!');
     // 서버에 문서 저장하는 코드 추가
     setSaveVisible(false);
-    Alert.alert('회의록에 문서 저장 완료!');
+    Alert.alert(
+      '회의록에 문서 저장 완료!',
+      `파일 제목: ${fileTitle}\n소속: ${fileDepartment}`,
+    );
+
+    navigation.navigate('MainTabScreen', {
+      content: Messages,
+      title: fileTitle,
+      department: fileDepartment,
+    });
+  };
+
+  const sendMessage = () => {
+    const nextId =
+      Messages.length > 0
+        ? Math.max(...Messages.map(Message => Message.id)) + 1
+        : 1;
+    const message = {
+      id: nextId,
+      text: messageText,
+    };
+    setMessages(Messages.concat(message));
+    console.log(Messages);
+    setMessageText('');
+    Keyboard.dismiss();
   };
 
   return (
@@ -151,10 +182,23 @@ const ChattingScreen = ({route, navigation}) => {
         </Dialog.Container>
       </View>
       <View style={styles.chatting}>
-        <SpeechBubble text="hello" direction="right" style={styles.bubble} />
-        <SpeechBubble text="hi~" direction="left" />
+        <AddChattings Messages={Messages} direction="left" />
       </View>
-      <AddChatting />
+      <View style={styles.block}>
+        <TextInput
+          placeholder="입력"
+          style={styles.input}
+          value={messageText}
+          onChangeText={text => {
+            setMessageText(text);
+          }}
+          onSubmitEditing={sendMessage}
+          returnKeyType="done"
+        />
+        <TouchableOpacity style={styles.Addbutton} onPress={sendMessage}>
+          <Icon name="send" size={27} color="#1976D2" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -210,7 +254,21 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 15,
   },
-  bubble: {},
+  block: {
+    height: 50,
+    paddingHorizontal: 16,
+    borderColor: 'transparent',
+    borderTopColor: '#bdbdbd',
+    borderWidth: 0.8,
+    borderBottomWidth: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  input: {
+    flex: 1,
+    fontSize: 17,
+    paddingVertical: 8,
+  },
 });
 
 export default ChattingScreen;
