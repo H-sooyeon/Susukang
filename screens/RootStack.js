@@ -59,7 +59,6 @@ const RootStack = () => {
         component={OpenMinute}
         options={{
           title: '문서',
-          headerTitleAlign: 'left',
         }}
       />
     </Stack.Navigator>
