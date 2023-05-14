@@ -13,8 +13,18 @@ import {Dropdown} from 'react-native-element-dropdown';
 import Dialog from 'react-native-dialog';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AddChattings from '../components/AddChatting';
+import Voice from '@react-native-voice/voice';
 
 const ChattingScreen = ({route, navigation}) => {
+  const [result, setResult] = useState('');
+  const [error, setError] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+
+  Voice.onSpeechStart = () => setIsRecording(true);
+  Voice.onSpeechEnd = () => setIsRecording(false);
+  Voice.onSpeechError = err => setError(err.error);
+  Voice.onSpeechResults = result => setResult(result.value[0]);
+
   const [language, setLanguage] = useState(route.params.languageName);
   const [category, setCategory] = useState(route.params.categoryName);
   const [selectedLanguage, setSelectedLanguage] = useState('');
@@ -25,12 +35,10 @@ const ChattingScreen = ({route, navigation}) => {
 
   const [fileTitle, setFileTitle] = useState('');
   const [fileDepartment, setFileDepartment] = useState('');
+  const [isInput, setIsInput] = useState(false);
 
   const [messageText, setMessageText] = useState('');
-  const [Messages, setMessages] = useState([
-    {id: 1, text: 'hello'},
-    {id: 2, text: 'my name is...'},
-  ]);
+  const [Messages, setMessages] = useState([{id: 1, text: 'hello'}]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -93,6 +101,24 @@ const ChattingScreen = ({route, navigation}) => {
     });
   };
 
+  const startRecording = async () => {
+    try {
+      setResult('');
+      setIsInput(false);
+      await Voice.start('en-US');
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const stopRecording = async () => {
+    try {
+      await Voice.stop();
+    } catch (error) {
+      setError(error);
+    }
+  };
+
   const sendMessage = () => {
     const nextId =
       Messages.length > 0
@@ -100,13 +126,20 @@ const ChattingScreen = ({route, navigation}) => {
         : 1;
     const message = {
       id: nextId,
-      text: messageText,
+      text: result,
     };
     setMessages(Messages.concat(message));
     console.log(Messages);
-    setMessageText('');
+    setResult('');
     Keyboard.dismiss();
+    setIsRecording(true);
+    startRecording();
   };
+
+  if (!isRecording && !isInput && result.length > 0) {
+    console.log(isRecording);
+    sendMessage();
+  }
 
   return (
     <View style={styles.Container}>
@@ -182,19 +215,33 @@ const ChattingScreen = ({route, navigation}) => {
         </Dialog.Container>
       </View>
       <View style={styles.chatting}>
-        <AddChattings Messages={Messages} direction="left" />
+        <AddChattings Messages={Messages} direction="Right" />
       </View>
+      <Text style={{fontSize: 30}}>{result}</Text>
+      <Text style={{color: 'red'}}>
+        {isRecording ? 'Stop Recording' : 'Start Recording'}
+      </Text>
       <View style={styles.block}>
         <TextInput
           placeholder="입력"
           style={styles.input}
-          value={messageText}
+          value={result}
           onChangeText={text => {
-            setMessageText(text);
+            setResult(text);
+            setIsInput(true);
           }}
           onSubmitEditing={sendMessage}
           returnKeyType="done"
         />
+        <TouchableOpacity
+          onPress={isRecording ? stopRecording : startRecording}>
+          <Icon
+            name="mic"
+            size={27}
+            color="black"
+            style={[{marginRight: 10}]}
+          />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.Addbutton} onPress={sendMessage}>
           <Icon name="send" size={27} color="#1976D2" />
         </TouchableOpacity>
