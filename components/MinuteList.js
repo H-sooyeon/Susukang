@@ -2,18 +2,17 @@ import React from 'react';
 import {View, StatusBar, StyleSheet, FlatList} from 'react-native';
 import MinuteItem from './MinuteItem';
 
-const MinuteList = ({datas, onRemove, getDate, today, onToggle}) => {
+const MinuteList = ({files, onRemove, getDate, today, onToggle}) => {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <FlatList
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         style={styles.minuteList}
-        data={datas}
+        data={files}
         renderItem={({item}) => (
           <View>
             <MinuteItem
-              id={item.id}
               title={item.title}
               department={item.department}
               date={item.date}
@@ -21,12 +20,12 @@ const MinuteList = ({datas, onRemove, getDate, today, onToggle}) => {
               content={item.content}
               getDate={getDate}
               today={today}
-              datas={datas}
               onToggle={onToggle}
+              file={item}
             />
           </View>
         )}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={file => file.id}
       />
     </View>
   );
