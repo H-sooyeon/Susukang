@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -12,24 +12,19 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 import Dialog from 'react-native-dialog';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import FileContext from '../contexts/FileContext';
 
-const MinuteItem = ({
-  id,
-  title,
-  department,
-  date,
-  content,
-  onRemove,
-  datas,
-  onToggle,
-  getDate,
-}) => {
+const MinuteItem = ({getDate, file}) => {
   const navigation = useNavigation();
 
   const [visible, setVisible] = useState(false);
+  const [filePath, setFilePath] = useState('');
+  const {id, title, department, content, date} = file;
+
   const [itemTitle, setitemTitle] = useState(title);
   const [itemDepartment, setitemDepartment] = useState(department);
-  const [filePath, setFilePath] = useState('');
+
+  const {onModify, onRemove} = useContext(FileContext);
 
   const showDialog = () => {
     setVisible(true);
@@ -48,33 +43,49 @@ const MinuteItem = ({
       setitemTitle(title);
       setitemDepartment(department);
     } else {
-      onToggle(id, itemTitle, itemDepartment, getDate(today));
-      // 서버에 저장된 문서 정보 수정하는 코드 추가
+      onModify({
+        id: id,
+        title: itemTitle,
+        department: itemDepartment,
+        date: getDate(today),
+      });
     }
     setVisible(false);
   };
 
-  const isPermitted = async () => {
-    if (Platform.OS === 'android') {
-      console.log('android');
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs access to Storage data',
-          },
-        );
-        console.log(PermissionsAndroid.RESULTS.GRANTED);
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        alert('Write permission err', err);
-        return false;
-      }
-    } else {
-      return true;
-    }
+  const onAskRemove = () => {
+    Alert.alert('삭제', '정말로 삭제하시겠어요?', [
+      {text: '취소', style: 'cancel'},
+      {
+        text: '삭제',
+        onPress: () => {
+          onRemove(file?.id);
+        },
+      },
+    ]);
   };
+
+  // const isPermitted = async () => {
+  //   if (Platform.OS === 'android') {
+  //     console.log('android');
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+  //         {
+  //           title: 'External Storage Write Permission',
+  //           message: 'App needs access to Storage data',
+  //         },
+  //       );
+  //       console.log(PermissionsAndroid.RESULTS.GRANTED);
+  //       return granted === PermissionsAndroid.RESULTS.GRANTED;
+  //     } catch (err) {
+  //       alert('Write permission err', err);
+  //       return false;
+  //     }
+  //   } else {
+  //     return true;
+  //   }
+  // };
 
   const createPDF = async () => {
     const fileTitle = department !== '' ? `${title}_${department}` : `${title}`;
@@ -105,12 +116,7 @@ const MinuteItem = ({
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('openFile', {
-              id: id,
-              title: title,
-              department: department,
-              date: date,
-              content: content,
-              datas: datas,
+              file: file,
             })
           }>
           <Text style={styles.title}>{title}</Text>
@@ -131,11 +137,7 @@ const MinuteItem = ({
           <Dialog.Container visible={visible}>
             <Dialog.Title>정보 수정</Dialog.Title>
             <Dialog.Description>변경 사항을 입력해주세요.</Dialog.Description>
-            <Dialog.Input
-              value={itemTitle}
-              onChangeText={setitemTitle}
-              onPressIn={() => console.log(visible)}
-            />
+            <Dialog.Input value={itemTitle} onChangeText={setitemTitle} />
             <Dialog.Input
               value={itemDepartment}
               onChangeText={setitemDepartment}
@@ -148,7 +150,7 @@ const MinuteItem = ({
           <Icon name="wysiwyg" size={30} color="#C0C0C0" />
           <Text style={styles.summaryText}>요약</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.summary} onPress={() => onRemove(id)}>
+        <TouchableOpacity style={styles.summary} onPress={onAskRemove}>
           <Icon name="delete" size={30} color="#cd5c5c" />
           <Text style={styles.summaryText}>삭제</Text>
         </TouchableOpacity>
