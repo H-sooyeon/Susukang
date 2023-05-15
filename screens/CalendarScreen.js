@@ -1,12 +1,9 @@
 import React from 'react';
 import {Text, View} from 'react-native';
+import CalendarView from '../components/CalendarView';
 
 const CalendarScreen = () => {
-  return (
-    <View>
-      <Text>Hello this screen is calendarScreen</Text>
-    </View>
-  );
+  return <CalendarView />;
 };
 
 export default CalendarScreen;
