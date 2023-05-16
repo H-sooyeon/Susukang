@@ -12,6 +12,7 @@ import MinuteList from '../components/MinuteList';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Dialog from 'react-native-dialog';
 import FileContext from '../contexts/FileContext';
+import SearchBar from '../components/SearchBar';
 
 const getDate = today => {
   const year = today.getFullYear();
@@ -110,6 +111,7 @@ const MinutesScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+      <SearchBar />
       {files.length === 0 ? (
         <Empty />
       ) : (
