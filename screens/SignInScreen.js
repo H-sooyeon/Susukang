@@ -76,7 +76,7 @@ const SignInScreen = ({navigation, route}) => {
       behavior={Platform.select({ios: 'padding'})}>
       <SafeAreaView style={styles.fullscreen}>
         <StatusBar backgroundColor="white" barStyle="dark-content" />
-        <Text style={styles.text}>Susukang</Text>
+        <Text style={styles.text}>Login</Text>
         <View style={styles.form}>
           <SignInForm
             isSignUp={isSignUp}
@@ -103,11 +103,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    fontSize: 32,
+    fontSize: 25,
     fontWeight: 'bold',
   },
   form: {
-    marginTop: 64,
+    marginTop: 50,
     width: '100%',
     paddingHorizontal: 16,
   },
