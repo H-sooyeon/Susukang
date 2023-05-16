@@ -1,15 +1,24 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, StatusBar, StyleSheet, FlatList} from 'react-native';
 import MinuteItem from './MinuteItem';
+import SearchContext from '../contexts/SearchContext';
 
 const MinuteList = ({files, onRemove, getDate, today, onToggle}) => {
+  const {keyword} = useContext(SearchContext);
+
+  const filtered =
+    keyword === ''
+      ? files
+      : files.filter(file =>
+          [file.title, file.content].some(text => text.includes(keyword)),
+        );
+
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <FlatList
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         style={styles.minuteList}
-        data={files}
+        data={filtered}
         renderItem={({item}) => (
           <View>
             <MinuteItem
