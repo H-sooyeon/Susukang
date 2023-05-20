@@ -7,6 +7,7 @@ import TranslationSettingsScreen from './TranslationSettingsScreen';
 import ChattingScreen from './ChattingScreen';
 import MainTabScreen from './MainTabScreen';
 import OpenMinute from './OpenMinute';
+import SummaryScreen from './SummaryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,13 +15,26 @@ const RootStack = () => {
   const {user} = useUserContext();
   return (
     // initialRouteName="SignIn"
-    <Stack.Navigator>
+    <Stack.Navigator
+      initialRouteName="MainTabScreen"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#1976D2',
+        },
+        headerTintColor: '#fff',
+      }}>
       {user ? (
         <>
           <Stack.Screen
             name="MainTab"
             component={MainTab}
-            options={{headerShown: false}}
+            options={{
+              headerShown: false,
+              headerStyle: {
+                backgroundColor: '#1976D2',
+              },
+              headerTintColor: '#ffff',
+            }}
           />
         </>
       ) : (
@@ -35,7 +49,24 @@ const RootStack = () => {
       <Stack.Screen
         name="MainTabScreen"
         component={MainTabScreen}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: '#1976D2',
+          },
+          headerTintColor: '#ffff',
+        }}
+      />
+      <Stack.Screen
+        name="Summary"
+        component={SummaryScreen}
+        options={{
+          title: '문서',
+          headerStyle: {
+            backgroundColor: '#1976D2',
+          },
+          headerTintColor: '#ffff',
+        }}
       />
       <Stack.Screen
         name="SettingOption"
@@ -43,6 +74,10 @@ const RootStack = () => {
         options={{
           title: '옵션',
           headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: '#1976D2',
+          },
+          headerTintColor: '#ffff',
         }}
         style={{flex: 1}}
       />
@@ -52,6 +87,10 @@ const RootStack = () => {
         options={{
           title: '대화 번역',
           headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: '#1976D2',
+          },
+          headerTintColor: '#ffff',
         }}
       />
       <Stack.Screen
@@ -59,6 +98,10 @@ const RootStack = () => {
         component={OpenMinute}
         options={{
           title: '문서',
+          headerStyle: {
+            backgroundColor: '#1976D2',
+          },
+          headerTintColor: '#ffff',
         }}
       />
     </Stack.Navigator>
