@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
 const SpeechBubble = ({text, direction}) => {
-  const botext = 'my name is sooyeon!!!';
+  const botext = 'hello';
   return (
     <View
       style={
