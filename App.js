@@ -6,19 +6,22 @@ import {FileContextProvider} from './contexts/FileContext';
 import {SettingContextProvider} from './contexts/SettingContext';
 import {SearchContextProvider} from './contexts/SearchContext';
 import {ScheduleContextProvider} from './contexts/ScheduleContext';
+import {KakaoContextProvider} from './contexts/KakaoContext';
 
 function App() {
   return (
     <UserContextProvider>
       <SearchContextProvider>
         <ScheduleContextProvider>
-          <FileContextProvider>
-            <SettingContextProvider>
-              <NavigationContainer>
-                <RootStack />
-              </NavigationContainer>
-            </SettingContextProvider>
-          </FileContextProvider>
+          <KakaoContextProvider>
+            <FileContextProvider>
+              <SettingContextProvider>
+                <NavigationContainer>
+                  <RootStack />
+                </NavigationContainer>
+              </SettingContextProvider>
+            </FileContextProvider>
+          </KakaoContextProvider>
         </ScheduleContextProvider>
       </SearchContextProvider>
     </UserContextProvider>
