@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     margin: 16,
     fontSize: 16,
     flexShrink: 1,
+    lineHeight: 30,
   },
 });
 
