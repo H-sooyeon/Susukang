@@ -10,7 +10,7 @@ const MinuteList = ({files, onRemove, getDate, today, onToggle}) => {
     keyword === ''
       ? files
       : files.filter(file =>
-          [file.title, file.content].some(text => text.includes(keyword)),
+          [file.title, file.department].some(text => text.includes(keyword)),
         );
 
   return (
