@@ -1,18 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  Platform,
-  PermissionsAndroid,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 import Dialog from 'react-native-dialog';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import FileContext from '../contexts/FileContext';
+import KakaoContext from '../contexts/KakaoContext';
 
 const MinuteItem = ({getDate, file}) => {
   const navigation = useNavigation();
@@ -25,6 +18,24 @@ const MinuteItem = ({getDate, file}) => {
   const [itemDepartment, setitemDepartment] = useState(department);
 
   const {onModify, onRemove} = useContext(FileContext);
+  const {onCreate} = useContext(KakaoContext);
+  const {summary} = useContext(KakaoContext);
+
+  const handleSummarize = async () => {
+    console.log(content);
+    await onCreate({
+      prompt: content,
+    });
+
+    const response = summary.text;
+    console.log(response);
+
+    navigation.navigate('Summary', {
+      title: title,
+      department: department,
+      summary: response,
+    });
+  };
 
   const showDialog = () => {
     setVisible(true);
@@ -146,7 +157,9 @@ const MinuteItem = ({getDate, file}) => {
             <Dialog.Button label="확인" onPress={handleOk} />
           </Dialog.Container>
         </View>
-        <TouchableOpacity style={[styles.summary, {marginRight: 5}]}>
+        <TouchableOpacity
+          style={[styles.summary, {marginRight: 5}]}
+          onPress={handleSummarize}>
           <Icon name="wysiwyg" size={30} color="#C0C0C0" />
           <Text style={styles.summaryText}>요약</Text>
         </TouchableOpacity>
