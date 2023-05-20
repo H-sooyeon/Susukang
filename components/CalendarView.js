@@ -23,7 +23,8 @@ const CalendarView = ({markedDates, selectedDate, onSelectDate}) => {
         arrowColor: '#1976D2',
         dotColor: '#1976D2',
         todayTextColor: '#1976D2',
-      }}></Calendar>
+      }}
+      firstDay={7}></Calendar>
   );
 };
 
