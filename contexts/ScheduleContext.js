@@ -9,17 +9,17 @@ export const ScheduleContextProvider = ({children}) => {
     {
       id: uuidv4(),
       title: 'Test1',
-      body: '프밍론 과제하기',
       date: '2023-05-17',
+      time: '12:27',
     },
   ]);
 
-  const onCreate = ({title, body, date}) => {
+  const onCreate = ({title, date, time}) => {
     const schedule = {
       id: uuidv4(),
       title,
-      body,
       date,
+      time,
     };
     setSchedules([schedule, ...schedules]);
   };
