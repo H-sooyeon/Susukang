@@ -76,7 +76,7 @@ const SignInScreen = ({navigation, route}) => {
       behavior={Platform.select({ios: 'padding'})}>
       <SafeAreaView style={styles.fullscreen}>
         <StatusBar backgroundColor="white" barStyle="dark-content" />
-        <Text style={styles.text}>Login</Text>
+        <Text style={styles.text}>L o g i n</Text>
         <View style={styles.form}>
           <SignInForm
             isSignUp={isSignUp}
