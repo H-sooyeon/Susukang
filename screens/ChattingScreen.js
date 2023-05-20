@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   Text,
   View,
@@ -14,6 +14,7 @@ import Dialog from 'react-native-dialog';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AddChattings from '../components/AddChatting';
 import Voice from '@react-native-voice/voice';
+import FileContext from '../contexts/FileContext';
 
 const ChattingScreen = ({route, navigation}) => {
   const [result, setResult] = useState('');
@@ -38,7 +39,7 @@ const ChattingScreen = ({route, navigation}) => {
   const [isInput, setIsInput] = useState(false);
 
   const [messageText, setMessageText] = useState('');
-  const [Messages, setMessages] = useState([{id: 1, text: 'hello'}]);
+  const [Messages, setMessages] = useState([{id: 1, text: '안녕하세요'}]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -62,6 +63,19 @@ const ChattingScreen = ({route, navigation}) => {
       },
     });
   });
+
+  const getDate = today => {
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    const date = `${year}.${month}.${day}`;
+
+    return date;
+  };
+
+  const {onCreate} = useContext(FileContext);
+  const {files} = useContext(FileContext);
 
   const showDialog = () => {
     setVisible(true);
@@ -89,6 +103,20 @@ const ChattingScreen = ({route, navigation}) => {
     console.log('파일 저장 완료!');
     // 서버에 문서 저장하는 코드 추가
     setSaveVisible(false);
+
+    let content = '';
+    Messages.map(id => {
+      content += id.text;
+      content += '\n';
+    });
+
+    onCreate({
+      title: fileTitle,
+      department: fileDepartment,
+      content: content,
+      date: getDate(new Date()),
+    });
+
     Alert.alert(
       '회의록에 문서 저장 완료!',
       `파일 제목: ${fileTitle}\n소속: ${fileDepartment}`,
@@ -143,14 +171,14 @@ const ChattingScreen = ({route, navigation}) => {
 
   return (
     <View style={styles.Container}>
-      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
       <View>
         <Dialog.Container
           visible={visible}
           style={{backgroundColor: '#fff', padding: 20, borderRadius: 15}}>
           <Dialog.Title style={styles.changeTitle}>언어 설정 변경</Dialog.Title>
           <Dropdown
-            style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
+            style={styles.dropdown}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
@@ -171,7 +199,7 @@ const ChattingScreen = ({route, navigation}) => {
             }}
           />
           <Dropdown
-            style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
+            style={styles.dropdown}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}

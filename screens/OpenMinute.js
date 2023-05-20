@@ -36,7 +36,7 @@ const OpenMinute = ({navigation, route}) => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={onContentSave}>
-          <Icon name="check" size={20} color="black" />
+          <Icon name="check" size={20} color="white" />
         </TouchableOpacity>
       ),
     });

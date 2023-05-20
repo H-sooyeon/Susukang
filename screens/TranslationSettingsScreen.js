@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -20,15 +20,24 @@ const TranslationSettingsScreen = ({navigation}) => {
   const {languages} = useContext(SettingContext);
   const {categorys} = useContext(SettingContext);
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: '#1976D2',
+      },
+      headerTintColor: '#ffff',
+    });
+  });
+
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
       <View style={styles.logo}>
         <Text style={styles.logoText}>옵션을 선택해주세요.</Text>
       </View>
       <View style={{backgroundColor: '#fff', padding: 20, borderRadius: 15}}>
         <Dropdown
-          style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
+          style={styles.dropdown}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           inputSearchStyle={styles.inputSearchStyle}
@@ -50,7 +59,7 @@ const TranslationSettingsScreen = ({navigation}) => {
           }}
         />
         <Dropdown
-          style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
+          style={styles.dropdown}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           inputSearchStyle={styles.inputSearchStyle}
