@@ -11,7 +11,7 @@ const MainTabScreen = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="회의록"
+        name="문서"
         component={MinutesScreen}
         tabBarOptions={{
           showLabel: false,
