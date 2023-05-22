@@ -11,9 +11,9 @@ import {Dropdown} from 'react-native-element-dropdown';
 import SettingContext from '../contexts/SettingContext';
 
 const TranslationSettingsScreen = ({navigation}) => {
-  const [languageData, setLanguageData] = useState(null);
+  const [languageCode, setLanguageCode] = useState(null);
   const [languageName, setLanguageName] = useState('');
-  const [categoryData, setCategoryData] = useState(null);
+  const [categoryCode, setCategoryCode] = useState(null);
   const [categoryName, setCategoryName] = useState('');
   const [isFocus, setIsFocus] = useState(false);
 
@@ -49,11 +49,11 @@ const TranslationSettingsScreen = ({navigation}) => {
           valueField="value"
           placeholder={!isFocus ? '언어 선택' : '...'}
           searchPlaceholder="검색"
-          value={languageData}
+          value={languageCode}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
-            setLanguageData(item.value);
+            setLanguageCode(item.value);
             setLanguageName(item.label);
             setIsFocus(false);
           }}
@@ -71,11 +71,11 @@ const TranslationSettingsScreen = ({navigation}) => {
           valueField="value"
           placeholder={!isFocus ? '분야 선택' : '...'}
           searchPlaceholder="검색"
-          value={categoryData}
+          value={categoryCode}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
-            setCategoryData(item.value);
+            setCategoryCode(item.value);
             setCategoryName(item.label);
             setIsFocus(false);
           }}
@@ -88,7 +88,7 @@ const TranslationSettingsScreen = ({navigation}) => {
             alignItems: 'center',
           }}
           onPress={() =>
-            languageData && categoryData
+            languageCode && categoryCode
               ? Alert.alert(
                   '선택이 맞는지 확인해주세요.',
                   `언어: ${languageName}\n분야: ${categoryName}`,
@@ -99,15 +99,15 @@ const TranslationSettingsScreen = ({navigation}) => {
                         navigation.navigate('Chatting', {
                           languageName: languageName,
                           categoryName: categoryName,
-                          languageNumber: languageData,
-                          categoryNumber: categoryData,
+                          languageCode: languageCode,
+                          categoryCode: categoryCode,
                           Language: languages,
                           Category: categorys,
                         });
 
-                        setLanguageData(null);
+                        setLanguageCode(null);
                         setLanguageName('');
-                        setCategoryData(null);
+                        setCategoryCode(null);
                         setCategoryName('');
                       },
                       style: 'default',
