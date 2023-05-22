@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
   },
   delete: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   modalButton: {
     marginLeft: 10,
