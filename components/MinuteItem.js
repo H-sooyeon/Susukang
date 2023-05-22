@@ -24,7 +24,7 @@ const MinuteItem = ({getDate, file}) => {
   const handleSummarize = async () => {
     console.log(content);
     await onCreate({
-      prompt: content,
+      prompt: content + '\n내용 요약:',
     });
 
     const response = summary.text;
