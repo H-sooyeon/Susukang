@@ -27,9 +27,15 @@ const ChattingScreen = ({route, navigation}) => {
   Voice.onSpeechResults = result => setResult(result.value[0]);
 
   const [language, setLanguage] = useState(route.params.languageName);
+  const [languageCode, setLanguageCode] = useState(route.params.languageCode);
   const [category, setCategory] = useState(route.params.categoryName);
+  const [categoryCode, setCategoryCode] = useState(route.params.categoryCode);
+
   const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedLanguageCode, setSelectedLanguageCode] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategoryCode, setSelectedCategoryCode] = useState('');
+
   const [visible, setVisible] = useState(false);
   const [saveVisible, setSaveVisible] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
@@ -38,7 +44,6 @@ const ChattingScreen = ({route, navigation}) => {
   const [fileDepartment, setFileDepartment] = useState('');
   const [isInput, setIsInput] = useState(false);
 
-  const [messageText, setMessageText] = useState('');
   const [Messages, setMessages] = useState([{id: 1, text: '안녕하세요'}]);
 
   useEffect(() => {
@@ -88,7 +93,9 @@ const ChattingScreen = ({route, navigation}) => {
 
   const handleOk = () => {
     setLanguage(selectedLanguage);
+    setLanguageCode(selectedLanguageCode);
     setCategory(selectedCategory);
+    setCategoryCode(selectedCategoryCode);
     // 서버로부터의 번역 언어 재설정
     setVisible(false);
   };
@@ -190,11 +197,12 @@ const ChattingScreen = ({route, navigation}) => {
             valueField="value"
             placeholder={!isFocus ? '언어 선택' : '...'}
             searchPlaceholder="검색"
-            value={language}
+            value={languageCode}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
             onChange={item => {
               setSelectedLanguage(item.label);
+              setSelectedLanguageCode(item.value);
               setIsFocus(false);
             }}
           />
@@ -211,11 +219,12 @@ const ChattingScreen = ({route, navigation}) => {
             valueField="value"
             placeholder={!isFocus ? '분야 선택' : '...'}
             searchPlaceholder="검색"
-            value={category}
+            value={categoryCode}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
             onChange={item => {
               setSelectedCategory(item.label);
+              setSelectedCategoryCode(item.value);
               setIsFocus(false);
             }}
           />
@@ -248,6 +257,9 @@ const ChattingScreen = ({route, navigation}) => {
       <Text style={{fontSize: 30}}>{result}</Text>
       <Text style={{color: 'red'}}>
         {isRecording ? 'Stop Recording' : 'Start Recording'}
+      </Text>
+      <Text>
+        {category}, {languageCode}
       </Text>
       <View style={styles.block}>
         <TextInput
@@ -287,7 +299,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headerButton: {
-    color: '#1976D2',
+    color: 'white',
     marginLeft: 5,
   },
   title: {
