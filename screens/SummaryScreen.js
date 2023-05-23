@@ -36,8 +36,6 @@ const SummaryScreen = ({navigation, route}) => {
     setFilePath(file.filePath);
     const path = JSON.stringify(file.filePath);
     Alert.alert('다운 받은 파일 경로', `${path}`);
-    //Alert.alert('파일 다운', '다운 되었습니다.');
-    //}
   };
 
   return (
