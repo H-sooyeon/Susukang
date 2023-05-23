@@ -7,6 +7,7 @@ import {SettingContextProvider} from './contexts/SettingContext';
 import {SearchContextProvider} from './contexts/SearchContext';
 import {ScheduleContextProvider} from './contexts/ScheduleContext';
 import {KakaoContextProvider} from './contexts/KakaoContext';
+import {STTContextProvider} from './contexts/STTContext';
 
 function App() {
   return (
@@ -14,13 +15,15 @@ function App() {
       <SearchContextProvider>
         <ScheduleContextProvider>
           <KakaoContextProvider>
-            <FileContextProvider>
-              <SettingContextProvider>
-                <NavigationContainer>
-                  <RootStack />
-                </NavigationContainer>
-              </SettingContextProvider>
-            </FileContextProvider>
+            <STTContextProvider>
+              <FileContextProvider>
+                <SettingContextProvider>
+                  <NavigationContainer>
+                    <RootStack />
+                  </NavigationContainer>
+                </SettingContextProvider>
+              </FileContextProvider>
+            </STTContextProvider>
           </KakaoContextProvider>
         </ScheduleContextProvider>
       </SearchContextProvider>
