@@ -15,6 +15,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import AddChattings from '../components/AddChatting';
 import Voice from '@react-native-voice/voice';
 import FileContext from '../contexts/FileContext';
+import STTContext from '../contexts/STTContext';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 
 const ChattingScreen = ({route, navigation}) => {
   const [result, setResult] = useState('');
@@ -46,6 +48,8 @@ const ChattingScreen = ({route, navigation}) => {
 
   const [Messages, setMessages] = useState([{id: 1, text: '안녕하세요'}]);
 
+  const audioRecorderPlayer = new AudioRecorderPlayer();
+
   useEffect(() => {
     navigation.setOptions({
       title: `${language}  |  ${category}`,
@@ -67,6 +71,7 @@ const ChattingScreen = ({route, navigation}) => {
         fontSize: 16,
       },
     });
+    AudioRecorderPlayer.setSubscriptionDuration(0.1);
   });
 
   const getDate = today => {
@@ -81,6 +86,7 @@ const ChattingScreen = ({route, navigation}) => {
 
   const {onCreate} = useContext(FileContext);
   const {files} = useContext(FileContext);
+  const {startRealtimeTranscription} = useContext(STTContext);
 
   const showDialog = () => {
     setVisible(true);
@@ -137,20 +143,34 @@ const ChattingScreen = ({route, navigation}) => {
   };
 
   const startRecording = async () => {
+    // try {
+    //   setResult('');
+    //   setIsInput(false);
+    //   await Voice.start('en-US');
+    // } catch (err) {
+    //   setError(err);
+    // }
     try {
-      setResult('');
-      setIsInput(false);
-      await Voice.start('en-US');
-    } catch (err) {
-      setError(err);
+      await audioRecorderPlayer.startRecorder();
+      console.log('Recording started');
+      // AWS STT 서비스와 연동하여 음성 입력을 실시간으로 변환 및 처리
+      startRealtimeTranscription(selectedLanguageCode);
+    } catch (error) {
+      console.error('Error starting recording:', error);
     }
   };
 
   const stopRecording = async () => {
+    // try {
+    //   await Voice.stop();
+    // } catch (error) {
+    //   setError(error);
+    // }
     try {
-      await Voice.stop();
+      await audioRecorderPlayer.stopRecorder();
+      console.log('Recording stopped');
     } catch (error) {
-      setError(error);
+      console.error('Error stopping recording:', error);
     }
   };
 
