@@ -22,13 +22,11 @@ const MinuteItem = ({getDate, file}) => {
   const {summary} = useContext(KakaoContext);
 
   const handleSummarize = async () => {
-    console.log(content);
     await onCreate({
       prompt: content + '\n이 내용 요약:',
     });
 
     const response = summary.text;
-    console.log(response);
 
     navigation.navigate('Summary', {
       title: title,
