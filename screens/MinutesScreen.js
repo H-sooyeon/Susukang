@@ -28,24 +28,6 @@ const MinutesScreen = ({navigation}) => {
   const [visible, setVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [department, setDepartment] = useState('');
-  // const [datas, setDatas] = useState([
-  //   {
-  //     id: 1,
-  //     title: '스마트물류 프로젝트 오티',
-  //     department: '소프트웨어공학과',
-  //     date: '2023.4.5',
-  //     content:
-  //       'hello my name is sooyeon hello my name is sooyeon hello my name is sooyeon',
-  //   },
-  //   {
-  //     id: 2,
-  //     title: '카카오테크캠퍼스',
-  //     department: '카카오',
-  //     date: '2023.4.10',
-  //     content:
-  //       'hello this is page is modifed minute page hello this is page is modifed minute page',
-  //   },
-  // ]);
 
   const {onCreate} = useContext(FileContext);
   const {files} = useContext(FileContext);
