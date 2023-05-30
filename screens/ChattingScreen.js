@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import {
   Text,
   View,
@@ -8,25 +8,32 @@ import {
   Alert,
   TextInput,
   Keyboard,
+  PermissionsAndroid,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  BackHandler,
 } from 'react-native';
+import GoogleCloudSpeechToText, {
+  SpeechRecognizeEvent,
+  VoiceStartEvent,
+  SpeechErrorEvent,
+  VoiceEvent,
+  SpeechStartEvent,
+} from 'react-native-google-cloud-speech-to-text';
 import {Dropdown} from 'react-native-element-dropdown';
 import Dialog from 'react-native-dialog';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AddChattings from '../components/AddChatting';
-import Voice from '@react-native-voice/voice';
 import FileContext from '../contexts/FileContext';
 import STTContext from '../contexts/STTContext';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import axios from 'axios';
+
+const GOOGLE_TRANSLATE_API_KEY = 'AIzaSyAyXF5gnFFgSuDXlOHLUzoq3SLfFuL_HDQ';
 
 const ChattingScreen = ({route, navigation}) => {
-  const [result, setResult] = useState('');
-  const [error, setError] = useState('');
+  const [transcript, setResult] = useState('');
+  const [inputResult, setInputResults] = useState('');
   const [isRecording, setIsRecording] = useState(false);
-
-  Voice.onSpeechStart = () => setIsRecording(true);
-  Voice.onSpeechEnd = () => setIsRecording(false);
-  Voice.onSpeechError = err => setError(err.error);
-  Voice.onSpeechResults = result => setResult(result.value[0]);
 
   const [language, setLanguage] = useState(route.params.languageName);
   const [languageCode, setLanguageCode] = useState(route.params.languageCode);
@@ -44,11 +51,133 @@ const ChattingScreen = ({route, navigation}) => {
 
   const [fileTitle, setFileTitle] = useState('');
   const [fileDepartment, setFileDepartment] = useState('');
-  const [isInput, setIsInput] = useState(false);
 
-  const [Messages, setMessages] = useState([{id: 1, text: '안녕하세요'}]);
+  const {messages, AddMessage} = useContext(STTContext);
 
-  const audioRecorderPlayer = new AudioRecorderPlayer();
+  const nextId = useRef(2);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      console.log('음성 인식 종료 isRecording?', isRecording);
+      if (isRecording) {
+        stopRecognizing();
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation, isRecording]);
+
+  useEffect(() => {
+    GoogleCloudSpeechToText.setApiKey('');
+    GoogleCloudSpeechToText.onVoice(onVoice);
+    GoogleCloudSpeechToText.onVoiceStart(onVoiceStart);
+    GoogleCloudSpeechToText.onVoiceEnd(onVoiceEnd);
+    GoogleCloudSpeechToText.onSpeechError(onSpeechError);
+    GoogleCloudSpeechToText.onSpeechRecognized(onSpeechRecognized);
+    GoogleCloudSpeechToText.onSpeechRecognizing(onSpeechRecognizing);
+
+    return () => {
+      GoogleCloudSpeechToText.removeListeners();
+    };
+  }, [onSpeechRecognized]);
+
+  useEffect(() => {
+    requestMicrophonePermission();
+  }, []);
+
+  const onSpeechError = _error => {
+    console.log('onSpeechError: ', _error);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onSpeechRecognized = async result => {
+    console.log('onSpeechRecognized: ', result);
+
+    const direction = await detectLanguage(result.transcript);
+
+    if (result.transcript !== '') {
+      AddMessage({
+        id: nextId.current,
+        text: result.transcript,
+        direction: direction,
+      });
+      nextId.current += 1;
+    }
+  };
+
+  const detectLanguage = async text => {
+    const textToTranslate = text; // 감지할 언어가 포함된 텍스트
+    const url = `https://translation.googleapis.com/language/translate/v2/detect?key=${GOOGLE_TRANSLATE_API_KEY}`;
+
+    try {
+      const response = await axios.post(url, {
+        q: textToTranslate,
+      });
+
+      const detectedLanguage = response.data.data.detections[0][0].language;
+      const direction = detectedLanguage === 'ko' ? 'right' : 'left';
+
+      return direction;
+    } catch (error) {
+      console.error('Error detecting language:', error);
+    }
+  };
+
+  const onSpeechRecognizing = result => {
+    console.log('onSpeechRecognizing: ', result);
+    setResult(result.transcript);
+  };
+
+  const onVoiceStart = _event => {
+    console.log('onVoiceStart', _event);
+  };
+
+  const onVoice = _event => {
+    //console.log('onVoice', _event);
+  };
+
+  const onVoiceEnd = () => {
+    console.log('onVoiceEnd: ');
+  };
+
+  const stopRecognizing = async () => {
+    setIsRecording(false);
+    await GoogleCloudSpeechToText.stop();
+  };
+
+  const startRecognizing = async () => {
+    setIsRecording(true);
+    const result = await GoogleCloudSpeechToText.start({
+      speechToFile: false,
+      languageCode: languageCode,
+    });
+
+    const result2 = await GoogleCloudSpeechToText.start({
+      speechToFile: false,
+      languageCode: 'ko-KR',
+    });
+
+    console.log('startRecognizing', result);
+    console.log('startRecognizing2:', result2);
+  };
+
+  const requestMicrophonePermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Microphone permission has been granted.');
+      } else {
+        console.log('Microphone permission has been denied.');
+      }
+    } catch (error) {
+      console.log(
+        'Error occurred while requesting microphone permission.',
+        error,
+      );
+    }
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -71,7 +200,6 @@ const ChattingScreen = ({route, navigation}) => {
         fontSize: 16,
       },
     });
-    AudioRecorderPlayer.setSubscriptionDuration(0.1);
   });
 
   const getDate = today => {
@@ -85,8 +213,6 @@ const ChattingScreen = ({route, navigation}) => {
   };
 
   const {onCreate} = useContext(FileContext);
-  const {files} = useContext(FileContext);
-  const {startRealtimeTranscription} = useContext(STTContext);
 
   const showDialog = () => {
     setVisible(true);
@@ -113,12 +239,11 @@ const ChattingScreen = ({route, navigation}) => {
   const handleSaveOk = () => {
     setFileTitle('');
     setFileDepartment('');
-    console.log('파일 저장 완료!');
     // 서버에 문서 저장하는 코드 추가
     setSaveVisible(false);
 
     let content = '';
-    Messages.map(id => {
+    messages.map(id => {
       content += id.text;
       content += '\n';
     });
@@ -136,68 +261,30 @@ const ChattingScreen = ({route, navigation}) => {
     );
 
     navigation.navigate('MainTabScreen', {
-      content: Messages,
+      content: messages,
       title: fileTitle,
       department: fileDepartment,
     });
   };
 
-  const startRecording = async () => {
-    // try {
-    //   setResult('');
-    //   setIsInput(false);
-    //   await Voice.start('en-US');
-    // } catch (err) {
-    //   setError(err);
-    // }
-    try {
-      await audioRecorderPlayer.startRecorder();
-      console.log('Recording started');
-      // AWS STT 서비스와 연동하여 음성 입력을 실시간으로 변환 및 처리
-      startRealtimeTranscription(selectedLanguageCode);
-    } catch (error) {
-      console.error('Error starting recording:', error);
-    }
-  };
+  const sendMessage = async () => {
+    const direction = await detectLanguage(inputResult);
 
-  const stopRecording = async () => {
-    // try {
-    //   await Voice.stop();
-    // } catch (error) {
-    //   setError(error);
-    // }
-    try {
-      await audioRecorderPlayer.stopRecorder();
-      console.log('Recording stopped');
-    } catch (error) {
-      console.error('Error stopping recording:', error);
+    if (inputResult !== '') {
+      AddMessage({
+        id: nextId.current,
+        text: inputResult,
+        direction: direction,
+      });
+      nextId.current += 1;
     }
-  };
 
-  const sendMessage = () => {
-    const nextId =
-      Messages.length > 0
-        ? Math.max(...Messages.map(Message => Message.id)) + 1
-        : 1;
-    const message = {
-      id: nextId,
-      text: result,
-    };
-    setMessages(Messages.concat(message));
-    console.log(Messages);
-    setResult('');
+    setInputResults('');
     Keyboard.dismiss();
-    setIsRecording(true);
-    startRecording();
   };
-
-  if (!isRecording && !isInput && result.length > 0) {
-    console.log(isRecording);
-    sendMessage();
-  }
 
   return (
-    <View style={styles.Container}>
+    <SafeAreaView style={styles.Container}>
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
       <View>
         <Dialog.Container
@@ -272,29 +359,22 @@ const ChattingScreen = ({route, navigation}) => {
         </Dialog.Container>
       </View>
       <View style={styles.chatting}>
-        <AddChattings Messages={Messages} direction="Right" />
+        <AddChattings />
       </View>
-      <Text style={{fontSize: 30}}>{result}</Text>
-      <Text style={{color: 'red'}}>
-        {isRecording ? 'Stop Recording' : 'Start Recording'}
-      </Text>
-      <Text>
-        {category}, {languageCode}
-      </Text>
+      {/* <Text style={{fontSize: 30}}>{transcript}</Text> */}
       <View style={styles.block}>
         <TextInput
           placeholder="입력"
           style={styles.input}
-          value={result}
+          value={inputResult}
           onChangeText={text => {
-            setResult(text);
-            setIsInput(true);
+            setInputResults(text);
           }}
           onSubmitEditing={sendMessage}
           returnKeyType="done"
         />
         <TouchableOpacity
-          onPress={isRecording ? stopRecording : startRecording}>
+          onPress={isRecording ? stopRecognizing : startRecognizing}>
           <Icon
             name="mic"
             size={27}
@@ -306,7 +386,7 @@ const ChattingScreen = ({route, navigation}) => {
           <Icon name="send" size={27} color="#1976D2" />
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
