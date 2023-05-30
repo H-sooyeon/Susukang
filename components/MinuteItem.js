@@ -23,7 +23,7 @@ const MinuteItem = ({getDate, file}) => {
 
   const handleSummarize = async () => {
     await onCreate({
-      prompt: content + '\n이 내용 요약:',
+      prompt: content + '\n지금 이 내용 요약:',
     });
 
     const response = summary.text;
@@ -112,8 +112,6 @@ const MinuteItem = ({getDate, file}) => {
     setFilePath(file.filePath);
     const path = JSON.stringify(file.filePath);
     Alert.alert('다운 받은 파일 경로', `${path}`);
-    //Alert.alert('파일 다운', '다운 되었습니다.');
-    //}
   };
 
   return (
