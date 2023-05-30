@@ -2,7 +2,8 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
 const SpeechBubble = ({text, direction}) => {
-  const botext = 'hello';
+  const rightBotomText = 'hello';
+  const leftBottomText = '안녕하세요';
   return (
     <View
       style={
@@ -16,7 +17,16 @@ const SpeechBubble = ({text, direction}) => {
         {text}
         {'\n'}
         <View style={styles.bottomContainer}>
-          <Text style={styles.bottomText}>{botext}</Text>
+          <Text
+            style={[
+              direction === 'right'
+                ? styles.bottomTextRight
+                : styles.bottomTextLeft,
+            ]}>
+            <Text>
+              {direction === 'left' ? leftBottomText : rightBotomText}
+            </Text>
+          </Text>
         </View>
       </Text>
     </View>
@@ -38,29 +48,37 @@ const styles = StyleSheet.create({
   },
   textRight: {
     fontSize: 18,
-    color: 'white',
-    backgroundColor: '#148CFF',
+    color: '#1976D2',
+    backgroundColor: 'white',
+    borderColor: '#CCE1FF',
+    fontWeight: 600,
+    borderWidth: 1,
     borderRadius: 17,
     paddingTop: 5,
     paddingBottom: 5,
     paddingLeft: 12,
     paddingRight: 12,
-    marginRight: 15,
+    marginRight: 10,
   },
   textLeft: {
     fontSize: 18,
-    color: 'black',
-    backgroundColor: '#C8D7FF',
+    color: '#323232',
+    backgroundColor: '#CCE1FF',
     borderRadius: 17,
     paddingTop: 5,
     paddingBottom: 5,
     paddingLeft: 12,
     paddingRight: 12,
-    marginLeft: 15,
+    marginLeft: 10,
   },
-  bottomText: {
-    color: '#BECDFF',
-    fontSize: 15,
+  bottomTextRight: {
+    color: '#28288C',
+    fontSize: 18,
+  },
+  bottomTextLeft: {
+    color: '#1976D2',
+    fontSize: 18,
+    fontWeight: 600,
   },
 });
 
