@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import SettingContext from '../contexts/SettingContext';
+import STTContext from '../contexts/STTContext';
 
 const TranslationSettingsScreen = ({navigation}) => {
   const [languageCode, setLanguageCode] = useState(null);
@@ -19,6 +20,8 @@ const TranslationSettingsScreen = ({navigation}) => {
 
   const {languages} = useContext(SettingContext);
   const {categorys} = useContext(SettingContext);
+
+  const {RemoveMessages} = useContext(STTContext);
 
   useEffect(() => {
     navigation.setOptions({
@@ -104,6 +107,8 @@ const TranslationSettingsScreen = ({navigation}) => {
                           Language: languages,
                           Category: categorys,
                         });
+
+                        RemoveMessages();
 
                         setLanguageCode(null);
                         setLanguageName('');
