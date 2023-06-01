@@ -1,7 +1,7 @@
 import React, {useState, createContext} from 'react';
 import axios from 'axios';
 
-const REST_API_KEY = 'e693e6de088e2630dec10f8f8ac3e9fc';
+const REST_API_KEY = '';
 
 const KakaoContext = createContext();
 
