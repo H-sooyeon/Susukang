@@ -9,14 +9,16 @@ export const STTContextProvider = ({children}) => {
       id: 1,
       text: '안녕하세요',
       direction: 'right',
+      languageCode: 'ko-KR',
     },
   ]);
 
-  const AddMessage = ({id, text, direction}) => {
+  const AddMessage = ({id, text, direction, languageCode}) => {
     const message = {
       id: id,
       text: text,
       direction: direction,
+      languageCode: languageCode,
     };
 
     //console.log(messages);
@@ -29,6 +31,7 @@ export const STTContextProvider = ({children}) => {
         id: 1,
         text: '안녕하세요',
         direction: 'right',
+        languageCode: 'ko-KR',
       },
     ]);
   };
