@@ -99,7 +99,8 @@ const ChattingScreen = ({route, navigation}) => {
       AddMessage({
         id: nextId.current,
         text: result.transcript,
-        direction: direction,
+        direction: direction === 'ko' ? 'right' : 'left',
+        languageCode: direction === 'ko' ? 'ko-KR' : languageCode,
       });
       nextId.current += 1;
     }
@@ -115,9 +116,9 @@ const ChattingScreen = ({route, navigation}) => {
       });
 
       const detectedLanguage = response.data.data.detections[0][0].language;
-      const direction = detectedLanguage === 'ko' ? 'right' : 'left';
+      //const direction = detectedLanguage === 'ko' ? 'right' : 'left';
 
-      return direction;
+      return detectedLanguage;
     } catch (error) {
       console.error('Error detecting language:', error);
     }
@@ -274,7 +275,8 @@ const ChattingScreen = ({route, navigation}) => {
       AddMessage({
         id: nextId.current,
         text: inputResult,
-        direction: direction,
+        direction: 'right',
+        languageCode: direction !== 'ko' ? languageCode : 'ko-KR',
       });
       nextId.current += 1;
     }
