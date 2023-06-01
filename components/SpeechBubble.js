@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
-const SpeechBubble = ({text, direction}) => {
+const SpeechBubble = ({text, direction, languageCode}) => {
   const rightBotomText = 'hello';
   const leftBottomText = '안녕하세요';
   return (

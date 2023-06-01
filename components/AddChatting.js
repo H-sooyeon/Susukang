@@ -22,7 +22,11 @@ const AddChatting = () => {
       data={messages}
       keyExtractor={item => item.id.toString()}
       renderItem={({item}) => (
-        <SpeechBubble text={item.text} direction={item.direction} />
+        <SpeechBubble
+          text={item.text}
+          direction={item.direction}
+          languageCode={item.languageCode}
+        />
       )}
     />
   );
