@@ -5,6 +5,7 @@ import {
   Text,
   View,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ScheduleContext from '../contexts/ScheduleContext';
@@ -93,30 +94,44 @@ const CalenderItem = ({schedule}) => {
     setPickerVisible(true);
   };
 
+  const handleInputFocus = e => {
+    try {
+      console.log('Clicked on TextInput');
+      setVisible(true);
+      console.log('왜 안돼');
+      console.log(visible);
+    } catch (error) {
+      console.log('오류 발생:', error);
+      // 오류 처리를 원하는 방식으로 작성합니다.
+    }
+  };
+
   return (
-    <Pressable style={styles.block} onPress={showDialog}>
-      <View style={styles.titleDateBlock}>
-        <View>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>{date}</Text>
+    <View>
+      <Pressable style={styles.block} onPress={showDialog}>
+        <View style={styles.titleDateBlock}>
+          <View>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.date}>{date}</Text>
+          </View>
+          <View style={styles.delete}>
+            <Text style={styles.time}>시간 {time}</Text>
+            <TouchableOpacity
+              style={styles.deleteIocn}
+              onPress={() => onRemove(schedule?.id)}>
+              <Icon name="clear" size={23} color="#cd5c5c" />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.delete}>
-          <Text style={styles.time}>시간 {time}</Text>
-          <TouchableOpacity
-            style={styles.deleteIocn}
-            onPress={() => onRemove(schedule?.id)}>
-            <Icon name="clear" size={23} color="#cd5c5c" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View>
         <Dialog.Container visible={visible}>
           <Dialog.Title>일정 수정</Dialog.Title>
-          <Dialog.Input
+          <Dialog.Description>변경 사항을 입력해주세요.</Dialog.Description>
+          {/* <TextInput
+            onFocus={handleInputFocus}
             placeholder="일정"
             onChangeText={setItemTitle}
             value={itemTitle}
-          />
+          /> */}
           <Pressable onPress={onPressDate} style={styles.modalButton}>
             <Text style={styles.modalText}>날짜</Text>
             <Text style={styles.dateTimeText}>{itemDate}</Text>
@@ -138,8 +153,8 @@ const CalenderItem = ({schedule}) => {
           <Dialog.Button label="취소" onPress={handleCancel} />
           <Dialog.Button label="확인" onPress={handleOk} />
         </Dialog.Container>
-      </View>
-    </Pressable>
+      </Pressable>
+    </View>
   );
 };
 
@@ -155,10 +170,8 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginTop: 10,
     marginBottom: 12,
-    borderRadius: 15,
-    borderColor: '#d2d2d2',
-    borderTopColor: '#1976D2',
-    borderTopWidth: 3,
+    borderLeftColor: '#1976D2',
+    borderLeftWidth: 4,
     elevation: 3, // android만 실행되는 부분
   },
   titleDateBlock: {
