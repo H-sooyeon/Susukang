@@ -1,10 +1,14 @@
 import React from 'react';
 import {createContext, useState} from 'react';
 import {v4 as uuidv4} from 'uuid';
+import axios from 'axios';
+import {useUserContext} from '../contexts/UserContext';
 
 const FileContext = createContext();
 
 export const FileContextProvider = ({children}) => {
+  const {user} = useUserContext();
+
   const [files, setFiles] = useState([
     {
       id: uuidv4(),
@@ -16,7 +20,7 @@ export const FileContextProvider = ({children}) => {
     },
   ]);
 
-  const onCreate = ({title, department, content, date}) => {
+  const onCreate = async ({title, department, content, date}) => {
     const file = {
       id: uuidv4(),
       title,
@@ -24,24 +28,61 @@ export const FileContextProvider = ({children}) => {
       content,
       date,
     };
+
+    try {
+      const setFileUrl = `http://3.39.132.36:8080/meeting/create/${user.uid}`;
+      await axios.post(setFileUrl, {
+        meetingid: uuidv4(),
+        title: title,
+        category: department,
+        data: content,
+        date: date,
+      });
+    } catch (error) {
+      console.error('Error createFile:', error);
+    }
+
     setFiles([file, ...files]);
   };
 
-  const onModify = modified => {
+  const onModify = async modified => {
     //id가 일치하면 교체, 그렇지 않으면 유지
     const nextFiles = files.map(file =>
       file.id === modified.id ? modified : file,
     );
+
+    try {
+      const modifyFileUrl = `http://3.39.132.36:8080/meeting/patch/${modified.id}`;
+      console.log(modified);
+      await axios.patch(modifyFileUrl, {
+        data: modified.content,
+        title: modified.title,
+        category: modified.department,
+        date: modified.date,
+      });
+    } catch (error) {
+      console.error('Error modifyFile:', error);
+    }
+
     setFiles(nextFiles);
   };
 
-  const onRemove = id => {
+  const onRemove = async id => {
     const nextFiles = files.filter(file => file.id !== id);
+
+    try {
+      const deleteUrl = `http://3.39.132.36:8080/meeting/delete/${id}`;
+      await axios.delete(deleteUrl);
+    } catch (error) {
+      console.error('Error removeFile:', error);
+    }
+
     setFiles(nextFiles);
   };
 
   return (
-    <FileContext.Provider value={{files, onCreate, onModify, onRemove}}>
+    <FileContext.Provider
+      value={{files, setFiles, onCreate, onModify, onRemove}}>
       {children}
     </FileContext.Provider>
   );
