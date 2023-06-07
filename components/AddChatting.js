@@ -3,7 +3,7 @@ import {FlatList, StyleSheet} from 'react-native';
 import SpeechBubble from './SpeechBubble';
 import STTContext from '../contexts/STTContext';
 
-const AddChatting = () => {
+const AddChatting = ({stopRecognizing, startRecognizing, isRecording}) => {
   const {messages} = useContext(STTContext);
   const flatListRef = useRef(null); // FlatList에 대한 ref 생성
 
@@ -26,6 +26,10 @@ const AddChatting = () => {
           text={item.text}
           direction={item.direction}
           languageCode={item.languageCode}
+          translateText={item.translateText}
+          stopRecognizing={stopRecognizing}
+          startRecognizing={startRecognizing}
+          isRecording={isRecording}
         />
       )}
     />
