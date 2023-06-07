@@ -31,6 +31,7 @@ const MinutesScreen = ({navigation}) => {
 
   const {onCreate} = useContext(FileContext);
   const {files} = useContext(FileContext);
+
   const onSave = () => {
     onCreate({
       title: title,
