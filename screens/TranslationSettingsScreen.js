@@ -103,7 +103,8 @@ const TranslationSettingsScreen = ({navigation}) => {
                           languageName: languageName,
                           categoryName: categoryName,
                           languageCode: languageCode,
-                          categoryCode: categoryCode,
+                          categoryCode:
+                            categoryCode === 'default' ? '' : categoryCode,
                           Language: languages,
                           Category: categorys,
                         });
