@@ -9,9 +9,7 @@ import {
   TextInput,
   Keyboard,
   PermissionsAndroid,
-  KeyboardAvoidingView,
   SafeAreaView,
-  BackHandler,
 } from 'react-native';
 import GoogleCloudSpeechToText, {
   SpeechRecognizeEvent,
@@ -58,7 +56,6 @@ const ChattingScreen = ({route, navigation}) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', () => {
-      console.log('음성 인식 종료 isRecording?', isRecording);
       if (isRecording) {
         stopRecognizing();
       }
@@ -68,7 +65,9 @@ const ChattingScreen = ({route, navigation}) => {
   }, [navigation, isRecording]);
 
   useEffect(() => {
-    GoogleCloudSpeechToText.setApiKey('');
+    GoogleCloudSpeechToText.setApiKey(
+      'AIzaSyBxRxXtGyuJIlUz5uKYRMhNBb0Z4G5VxAE',
+    );
     GoogleCloudSpeechToText.onVoice(onVoice);
     GoogleCloudSpeechToText.onVoiceStart(onVoiceStart);
     GoogleCloudSpeechToText.onVoiceEnd(onVoiceEnd);
@@ -94,15 +93,40 @@ const ChattingScreen = ({route, navigation}) => {
     console.log('onSpeechRecognized: ', result);
 
     const direction = await detectLanguage(result.transcript);
+    const di = direction === 'ko' ? 'right' : 'left';
+    const sourceLanguage = di === 'ko' ? 'ko' : languageCode.substr(0, 2);
+    const targetLanguage = di === 'ko' ? languageCode.substr(0, 2) : 'ko';
+
+    const translateText = await translate(
+      result.transcript,
+      sourceLanguage,
+      targetLanguage,
+    );
 
     if (result.transcript !== '') {
       AddMessage({
         id: nextId.current,
         text: result.transcript,
-        direction: direction === 'ko' ? 'right' : 'left',
-        languageCode: direction === 'ko' ? 'ko-KR' : languageCode,
+        direction: di,
+        languageCode: direction === 'ko' ? languageCode : 'ko-KR',
+        translateText: translateText,
       });
       nextId.current += 1;
+    }
+  };
+
+  const translate = async (text, sourceLanguage, targetLanguage) => {
+    try {
+      const translateUrl = `http://3.39.132.36:8080/translate`;
+      const response = await axios.post(translateUrl, {
+        Text: text,
+        TerminologyNames: categoryCode,
+        SourceLanguageCode: sourceLanguage,
+        TargetLanguageCode: targetLanguage,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error translate:', error);
     }
   };
 
@@ -134,7 +158,7 @@ const ChattingScreen = ({route, navigation}) => {
   };
 
   const onVoice = _event => {
-    //console.log('onVoice', _event);
+    console.log('onVoice', _event);
   };
 
   const onVoiceEnd = () => {
@@ -271,12 +295,25 @@ const ChattingScreen = ({route, navigation}) => {
   const sendMessage = async () => {
     const direction = await detectLanguage(inputResult);
 
+    const sourceLanguage =
+      direction === 'ko' ? 'ko' : languageCode.substr(0, 2);
+    const targetLanguage =
+      direction === 'ko' ? languageCode.substr(0, 2) : 'ko';
+
+    const translateText = await translate(
+      inputResult,
+      sourceLanguage,
+      targetLanguage,
+    );
+    console.log(translateText);
+
     if (inputResult !== '') {
       AddMessage({
         id: nextId.current,
         text: inputResult,
         direction: 'right',
-        languageCode: direction !== 'ko' ? languageCode : 'ko-KR',
+        languageCode: direction === 'ko' ? languageCode : 'ko-KR',
+        translateText: translateText,
       });
       nextId.current += 1;
     }
@@ -333,7 +370,9 @@ const ChattingScreen = ({route, navigation}) => {
             onBlur={() => setIsFocus(false)}
             onChange={item => {
               setSelectedCategory(item.label);
-              setSelectedCategoryCode(item.value);
+              setSelectedCategoryCode(
+                item.value === 'default' ? '' : item.value,
+              );
               setIsFocus(false);
             }}
           />
@@ -361,7 +400,11 @@ const ChattingScreen = ({route, navigation}) => {
         </Dialog.Container>
       </View>
       <View style={styles.chatting}>
-        <AddChattings />
+        <AddChattings
+          stopRecognizing={stopRecognizing}
+          startRecognizing={startRecognizing}
+          isRecording={isRecording}
+        />
       </View>
       {/* <Text style={{fontSize: 30}}>{transcript}</Text> */}
       <View style={styles.block}>
@@ -381,7 +424,7 @@ const ChattingScreen = ({route, navigation}) => {
             name="mic"
             size={27}
             color="black"
-            style={[{marginRight: 10}]}
+            style={[{marginRight: 20}]}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.Addbutton} onPress={sendMessage}>
@@ -403,6 +446,7 @@ const styles = StyleSheet.create({
   headerButton: {
     color: 'white',
     marginLeft: 5,
+    marginRight: 2,
   },
   title: {
     marginTop: 10,
