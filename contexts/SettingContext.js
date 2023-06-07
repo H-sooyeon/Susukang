@@ -22,9 +22,10 @@ export function SettingContextProvider({children}) {
   ];
 
   const categorys = [
-    {label: '항만', value: '1'},
-    {label: '회계', value: '2'},
-    {label: '소프트웨어 및 ICT', value: '3'},
+    {label: '기본', value: 'default'},
+    {label: '항만', value: 'PORT'},
+    {label: '회계', value: 'ECONOMY'},
+    {label: '소프트웨어 및 ICT', value: 'SW'},
   ];
 
   return (
