@@ -1,20 +1,22 @@
 import React from 'react';
 import {useUserContext} from '../contexts/UserContext';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import MainTab from './MainTab';
+//import MainTab from './MainTab';
 import SignInScreen from './SignInScreen';
 import TranslationSettingsScreen from './TranslationSettingsScreen';
 import ChattingScreen from './ChattingScreen';
 import MainTabScreen from './MainTabScreen';
 import OpenMinute from './OpenMinute';
 import SummaryScreen from './SummaryScreen';
+import VoiceScreen from './VoiceScreen';
+//import Ddd from './Ddd';
 
 const Stack = createNativeStackNavigator();
 
 const RootStack = () => {
   const {user} = useUserContext();
   return (
-    // initialRouteName="SignIn"
+    // initialRouteName="Voice"
     <Stack.Navigator
       initialRouteName="MainTabScreen"
       screenOptions={{
@@ -27,7 +29,7 @@ const RootStack = () => {
         <>
           <Stack.Screen
             name="MainTab"
-            component={MainTab}
+            component={MainTabScreen}
             options={{
               headerShown: false,
               headerStyle: {
@@ -46,6 +48,17 @@ const RootStack = () => {
           />
         </>
       )}
+      {/* <Stack.Screen
+        name="Voice"
+        component={VoiceScreen}
+        options={{
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: '#1976D2',
+          },
+          headerTintColor: '#ffff',
+        }}
+      /> */}
       <Stack.Screen
         name="MainTabScreen"
         component={MainTabScreen}
