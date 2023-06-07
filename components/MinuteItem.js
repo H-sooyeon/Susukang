@@ -19,20 +19,23 @@ const MinuteItem = ({getDate, file}) => {
 
   const {onModify, onRemove} = useContext(FileContext);
   const {onCreate} = useContext(KakaoContext);
-  const {summary} = useContext(KakaoContext);
 
   const handleSummarize = async () => {
-    await onCreate({
-      prompt: content + '\n지금 이 내용 요약:',
-    });
+    try {
+      const createdSummary = await onCreate({
+        prompt: content + '\n한 줄 요약:',
+      });
 
-    const response = summary.text;
+      console.log(createdSummary);
 
-    navigation.navigate('Summary', {
-      title: title,
-      department: department,
-      summary: response,
-    });
+      navigation.navigate('Summary', {
+        title: title,
+        department: department,
+        summary: createdSummary,
+      });
+    } catch (error) {
+      console.error('Error: ', error);
+    }
   };
 
   const showDialog = () => {
