@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useContext} from 'react';
 import {
   Alert,
   View,
@@ -14,6 +14,9 @@ import SignInForm from '../components/SignForm';
 import {signIn, signUp} from '../lib/auth';
 import {getUser, createUser} from '../lib/users';
 import {useUserContext} from '../contexts/UserContext';
+import axios from 'axios';
+import FileContext from '../contexts/FileContext';
+import ScheduleContext from '../contexts/ScheduleContext';
 
 const SignInScreen = ({navigation, route}) => {
   const {isSignUp} = route.params ?? {};
@@ -25,6 +28,8 @@ const SignInScreen = ({navigation, route}) => {
 
   const [loading, setLoading] = useState();
   const {setUser} = useUserContext();
+  const {setFiles} = useContext(FileContext);
+  const {setSchedules} = useContext(ScheduleContext);
 
   const createChangeTextHandler = name => value => {
     setForm({...form, [name]: value});
@@ -35,7 +40,12 @@ const SignInScreen = ({navigation, route}) => {
     const {email, password, confirmPassword} = form;
 
     if (isSignUp && password !== confirmPassword) {
-      Alert.alert('실패', '비밀먼호가 일치하지 않습니다.');
+      Alert.alert('실패', '비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (password.length === 0) {
+      Alert.alert('실패', '비밀번호를 입력해주세요.');
       return;
     }
 
@@ -45,17 +55,53 @@ const SignInScreen = ({navigation, route}) => {
     try {
       const {user} = isSignUp ? await signUp(info) : await signIn(info);
 
-      // const profile = await getUser(user.uid);
-      // console.log(await getUser(user.uid));
-      console.log(user);
+      if (isSignUp) {
+        try {
+          const SignUpUrl = 'http://3.39.132.36:8080/account/create';
+          await axios.post(SignUpUrl, {
+            accountid: user.uid,
+          });
+        } catch (error) {
+          console.error('Error SignUp:', error);
+        }
+      } else {
+        try {
+          const getFileUrl = `http://3.39.132.36:8080/meetings/${user.uid}`;
+          const response = await axios.get(getFileUrl);
+          console.log('file data: ', response.data);
+          const transformedData = response.data.map(item => ({
+            id: item.meetingid,
+            title: item.title,
+            department: item.category,
+            content: item.data,
+            date: item.date,
+          }));
+          const reversedData = transformedData.reverse();
+          setFiles(reversedData);
+        } catch (error) {
+          console.error('Error SignIn:', error);
+        }
 
-      // if (!profile) {
-      //   navigation.navigate('Minutes', {uid: user.uid});
-      // } else {
-      //   setUser(profile);
-      // }
+        try {
+          const getScheduleUrl = `http://3.39.132.36:8080/schedules/${user.uid}`;
+          const response = await axios.get(getScheduleUrl);
+          console.log('schedule data : ', response.data);
+          const transformedData = response.data.map(item => ({
+            id: item.id,
+            title: item.title,
+            date: item.date,
+            time: item.time,
+          }));
+          const reversedData = transformedData.reverse();
+          setSchedules(reversedData);
+        } catch (error) {
+          console.error('Error delete Schedule:', error);
+        }
+      }
 
-      navigation.navigate('MainTabScreen', {uid: user.uid});
+      setUser(user);
+
+      navigation.navigate('MainTabScreen');
     } catch (e) {
       const message = {
         'auth/email-already-in-use': '이미 가입된 이메일입니다.',
@@ -65,6 +111,7 @@ const SignInScreen = ({navigation, route}) => {
       };
       const msg = message[e.code] || `${isSignUp ? '가입' : '로그인'} 실패`;
       Alert.alert('실패', msg);
+      console.log(e);
     } finally {
       setLoading(false);
     }
