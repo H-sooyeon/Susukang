@@ -54,7 +54,6 @@ const SignInScreen = ({navigation, route}) => {
 
     try {
       const {user} = isSignUp ? await signUp(info) : await signIn(info);
-
       if (isSignUp) {
         try {
           const SignUpUrl = 'http://3.39.132.36:8080/account/create';
@@ -68,7 +67,6 @@ const SignInScreen = ({navigation, route}) => {
         try {
           const getFileUrl = `http://3.39.132.36:8080/meetings/${user.uid}`;
           const response = await axios.get(getFileUrl);
-          console.log('file data: ', response.data);
           const transformedData = response.data.map(item => ({
             id: item.meetingid,
             title: item.title,
@@ -79,7 +77,7 @@ const SignInScreen = ({navigation, route}) => {
           const reversedData = transformedData.reverse();
           setFiles(reversedData);
         } catch (error) {
-          console.error('Error SignIn:', error);
+          console.error('Error get File:', error);
         }
 
         try {
@@ -95,13 +93,15 @@ const SignInScreen = ({navigation, route}) => {
           const reversedData = transformedData.reverse();
           setSchedules(reversedData);
         } catch (error) {
-          console.error('Error delete Schedule:', error);
+          console.error('Error get Schedule:', error);
         }
       }
 
       setUser(user);
+      console.log(user);
 
       navigation.navigate('MainTabScreen');
+      //navigation.navigate('messageScreen');
     } catch (e) {
       const message = {
         'auth/email-already-in-use': '이미 가입된 이메일입니다.',

@@ -8,8 +8,8 @@ import ChattingScreen from './ChattingScreen';
 import MainTabScreen from './MainTabScreen';
 import OpenMinute from './OpenMinute';
 import SummaryScreen from './SummaryScreen';
-import VoiceScreen from './VoiceScreen';
-//import Ddd from './Ddd';
+import MessageScreen from './MessageScreen';
+import ChatScreen from './ChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,7 +18,7 @@ const RootStack = () => {
   return (
     // initialRouteName="Voice"
     <Stack.Navigator
-      initialRouteName="MainTabScreen"
+      //initialRouteName="MainTabScreen"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#1976D2',
@@ -48,9 +48,9 @@ const RootStack = () => {
           />
         </>
       )}
-      {/* <Stack.Screen
-        name="Voice"
-        component={VoiceScreen}
+      <Stack.Screen
+        name="messageScreen"
+        component={MessageScreen}
         options={{
           headerShown: false,
           headerStyle: {
@@ -58,7 +58,18 @@ const RootStack = () => {
           },
           headerTintColor: '#ffff',
         }}
-      /> */}
+      />
+      <Stack.Screen
+        name="Chats"
+        component={ChatScreen}
+        options={{
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: '#1976D2',
+          },
+          headerTintColor: '#ffff',
+        }}
+      />
       <Stack.Screen
         name="MainTabScreen"
         component={MainTabScreen}
