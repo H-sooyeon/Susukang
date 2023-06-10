@@ -1,4 +1,10 @@
-import React, {useEffect, useState, useContext, useRef} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 import {
   Text,
   View,
@@ -6,8 +12,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  TextInput,
-  Keyboard,
   PermissionsAndroid,
   SafeAreaView,
 } from 'react-native';
@@ -21,16 +25,17 @@ import GoogleCloudSpeechToText, {
 import {Dropdown} from 'react-native-element-dropdown';
 import Dialog from 'react-native-dialog';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AddChattings from '../components/AddChatting';
 import FileContext from '../contexts/FileContext';
 import STTContext from '../contexts/STTContext';
 import axios from 'axios';
+import {useUserContext} from '../contexts/UserContext';
+import firestore from '@react-native-firebase/firestore';
+import {GiftedChat} from 'react-native-gifted-chat';
 
-const GOOGLE_TRANSLATE_API_KEY = 'AIzaSyAyXF5gnFFgSuDXlOHLUzoq3SLfFuL_HDQ';
+const GOOGLE_TRANSLATE_API_KEY = '';
 
 const ChattingScreen = ({route, navigation}) => {
   const [transcript, setResult] = useState('');
-  const [inputResult, setInputResults] = useState('');
   const [isRecording, setIsRecording] = useState(false);
 
   const [language, setLanguage] = useState(route.params.languageName);
@@ -50,9 +55,11 @@ const ChattingScreen = ({route, navigation}) => {
   const [fileTitle, setFileTitle] = useState('');
   const [fileDepartment, setFileDepartment] = useState('');
 
-  const {messages, AddMessage} = useContext(STTContext);
+  const {channer, AddMessage, message} = useContext(STTContext);
 
-  const nextId = useRef(2);
+  const nextId = useRef(1);
+  const uid = route.params.uid;
+  const name = route.params.name;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', () => {
@@ -92,27 +99,46 @@ const ChattingScreen = ({route, navigation}) => {
   const onSpeechRecognized = async result => {
     console.log('onSpeechRecognized: ', result);
 
-    const direction = await detectLanguage(result.transcript);
-    const di = direction === 'ko' ? 'right' : 'left';
-    const sourceLanguage = di === 'ko' ? 'ko' : languageCode.substr(0, 2);
-    const targetLanguage = di === 'ko' ? languageCode.substr(0, 2) : 'ko';
+    const detectedLanguage = await detectLanguage(result.transcript);
+    const sourceLanguage =
+      detectedLanguage === 'ko' ? 'ko' : languageCode.substr(0, 2);
+    const targetLanguage =
+      detectedLanguage === 'ko' ? languageCode.substr(0, 2) : 'ko';
 
-    const translateText = await translate(
+    const msg = {
+      _id: nextId.current,
+      createdAt: new Date(),
+      text: result.transcript,
+      user: {_id: user.uid},
+    };
+
+    nextId.current += 1;
+
+    const text = await translate(
       result.transcript,
       sourceLanguage,
       targetLanguage,
     );
 
-    if (result.transcript !== '') {
-      AddMessage({
-        id: nextId.current,
-        text: result.transcript,
-        direction: di,
-        languageCode: direction === 'ko' ? languageCode : 'ko-KR',
-        translateText: translateText,
-      });
-      nextId.current += 1;
-    }
+    msg.text += '\n\n' + text;
+    sourceLanguage === 'ko' ? AddMessage(msg.text) : AddMessage(text);
+
+    nextId.current += 1;
+    const usermsg = {
+      ...msg,
+      sentBy: user.uid,
+      sentTo: uid,
+      createdAt: new Date(),
+    };
+    setMessages(previousMessages =>
+      GiftedChat.append(previousMessages, usermsg),
+    );
+    const chatid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+    firestore()
+      .collection('Chats')
+      .doc(chatid)
+      .collection('messages')
+      .add({...usermsg, createdAt: firestore.FieldValue.serverTimestamp()});
   };
 
   const translate = async (text, sourceLanguage, targetLanguage) => {
@@ -140,7 +166,6 @@ const ChattingScreen = ({route, navigation}) => {
       });
 
       const detectedLanguage = response.data.data.detections[0][0].language;
-      //const direction = detectedLanguage === 'ko' ? 'right' : 'left';
 
       return detectedLanguage;
     } catch (error) {
@@ -206,12 +231,17 @@ const ChattingScreen = ({route, navigation}) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: `${language}  |  ${category}`,
+      title: `${language}  |  ${category}  |  ${channer}`,
       headerTitleAlign: 'left',
     });
     navigation.setOptions({
       headerRight: () => (
         <View style={styles.header}>
+          <TouchableOpacity
+            onPress={isRecording ? stopRecognizing : startRecognizing}
+            style={styles.mic}>
+            <Icon name="mic" size={20} />
+          </TouchableOpacity>
           <TouchableOpacity onPress={showDialog}>
             <Text style={styles.headerButton}>변경</Text>
           </TouchableOpacity>
@@ -268,10 +298,7 @@ const ChattingScreen = ({route, navigation}) => {
     setSaveVisible(false);
 
     let content = '';
-    messages.map(id => {
-      content += id.text;
-      content += '\n';
-    });
+    content = message.join('\n');
 
     onCreate({
       title: fileTitle,
@@ -292,35 +319,88 @@ const ChattingScreen = ({route, navigation}) => {
     });
   };
 
-  const sendMessage = async () => {
-    const direction = await detectLanguage(inputResult);
-
+  const onTranslate = async msg => {
     const sourceLanguage =
-      direction === 'ko' ? 'ko' : languageCode.substr(0, 2);
+      languageCode.substr(0, 2) === 'ko' ? languageCode.substr(0, 2) : 'ko';
+
     const targetLanguage =
-      direction === 'ko' ? languageCode.substr(0, 2) : 'ko';
+      languageCode.substr(0, 2) === 'ko' ? 'ko' : languageCode.substr(0, 2);
 
     const translateText = await translate(
-      inputResult,
+      msg.text,
       sourceLanguage,
       targetLanguage,
     );
-    console.log(translateText);
-
-    if (inputResult !== '') {
-      AddMessage({
-        id: nextId.current,
-        text: inputResult,
-        direction: 'right',
-        languageCode: direction === 'ko' ? languageCode : 'ko-KR',
-        translateText: translateText,
-      });
-      nextId.current += 1;
-    }
-
-    setInputResults('');
-    Keyboard.dismiss();
+    return translateText;
   };
+
+  const [messages, setMessages] = useState([]);
+  const {user} = useUserContext();
+
+  useEffect(() => {
+    setMessages([
+      {
+        _id: 1,
+        text: 'Hello developer',
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: 'React Native',
+        },
+      },
+    ]);
+  }, []);
+
+  const onSend = useCallback(
+    async msgArray => {
+      const msg = msgArray[0];
+      const text = await onTranslate(msg);
+      AddMessage(msg.text);
+      msg.text += '\n\n' + text;
+      const usermsg = {
+        ...msg,
+        sentBy: user.uid,
+        sentTo: uid,
+        createdAt: new Date(),
+      };
+      setMessages(previousMessages =>
+        GiftedChat.append(previousMessages, usermsg),
+      );
+      const chatid =
+        uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+      firestore()
+        .collection('Chats')
+        .doc(chatid)
+        .collection('messages')
+        .add({...usermsg, createdAt: firestore.FieldValue.serverTimestamp()});
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [uid, user.uid, AddMessage],
+  );
+
+  useEffect(() => {
+    const chatid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+    const unsubscribe = firestore()
+      .collection('Chats')
+      .doc(chatid)
+      .collection('messages')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(snapshot => {
+        const allTheMsgs = snapshot.docs.map(docSnap => {
+          const createdAt = docSnap.data().createdAt;
+          const createdAtDate = createdAt ? createdAt.toDate() : null;
+          return {
+            ...docSnap.data(),
+            createdAt: createdAtDate,
+          };
+        });
+        setMessages(allTheMsgs);
+      });
+
+    return () => {
+      unsubscribe(); // 컴포넌트가 언마운트될 때 구독 해제
+    };
+  }, [uid, user]);
 
   return (
     <SafeAreaView style={styles.Container}>
@@ -399,38 +479,25 @@ const ChattingScreen = ({route, navigation}) => {
           <Dialog.Button label="확인" onPress={handleSaveOk} />
         </Dialog.Container>
       </View>
-      <View style={styles.chatting}>
+      {/* <View style={styles.chatting}>
         <AddChattings
           stopRecognizing={stopRecognizing}
           startRecognizing={startRecognizing}
           isRecording={isRecording}
         />
-      </View>
-      {/* <Text style={{fontSize: 30}}>{transcript}</Text> */}
-      <View style={styles.block}>
-        <TextInput
-          placeholder="입력"
-          style={styles.input}
-          value={inputResult}
-          onChangeText={text => {
-            setInputResults(text);
-          }}
-          onSubmitEditing={sendMessage}
-          returnKeyType="done"
-        />
-        <TouchableOpacity
-          onPress={isRecording ? stopRecognizing : startRecognizing}>
-          <Icon
-            name="mic"
-            size={27}
-            color="black"
-            style={[{marginRight: 20}]}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.Addbutton} onPress={sendMessage}>
-          <Icon name="send" size={27} color="#1976D2" />
-        </TouchableOpacity>
-      </View>
+          </View>*/}
+      <GiftedChat
+        style={{flex: 1}}
+        messages={messages}
+        onSend={text => onSend(text)}
+        user={{
+          _id: user.uid,
+        }}
+        alwaysShowSend
+        renderAvatar={() => null}
+        showAvatarForEveryMessage={true}
+        renderTime={() => null}
+      />
     </SafeAreaView>
   );
 };
@@ -454,6 +521,9 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 17,
+  },
+  mic: {
+    marginRight: 7,
   },
   inputSearchStyle: {
     height: 40,
