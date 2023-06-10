@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  TextInput,
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import SettingContext from '../contexts/SettingContext';
 import STTContext from '../contexts/STTContext';
+import firestore from '@react-native-firebase/firestore';
+import {useUserContext} from '../contexts/UserContext';
 
 const TranslationSettingsScreen = ({navigation}) => {
   const [languageCode, setLanguageCode] = useState(null);
@@ -17,11 +20,16 @@ const TranslationSettingsScreen = ({navigation}) => {
   const [categoryCode, setCategoryCode] = useState(null);
   const [categoryName, setCategoryName] = useState('');
   const [isFocus, setIsFocus] = useState(false);
+  const [channerText, setChannerText] = useState('');
 
   const {languages} = useContext(SettingContext);
   const {categorys} = useContext(SettingContext);
 
-  const {RemoveMessages} = useContext(STTContext);
+  let uid;
+  let email;
+
+  const {setChanner, RemoveMessages} = useContext(STTContext);
+  const {user} = useUserContext();
 
   useEffect(() => {
     navigation.setOptions({
@@ -32,11 +40,38 @@ const TranslationSettingsScreen = ({navigation}) => {
     });
   });
 
+  const handleButtonPress = () => {
+    if (channerText.length > 0) {
+      firestore().collection(channerText).add({
+        name: channerText,
+      });
+    }
+  };
+
+  const getUsers = async () => {
+    const querySanp = await firestore()
+      .collection('users')
+      .where('email', '==', channerText)
+      .get();
+    // .where('email', '==', channerText)
+    // .get();
+    const allUsers = querySanp.docs.map(docSnap => docSnap.data());
+    uid = allUsers.map(item => item.uid)[0];
+    email = allUsers.map(item => item.email)[0];
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
       <View style={styles.logo}>
         <Text style={styles.logoText}>옵션을 선택해주세요.</Text>
+      </View>
+      <View style={styles.chattingCode}>
+        <TextInput
+          placeholder="상대방 메일을 입력해주세요."
+          value={channerText}
+          onChangeText={setChannerText}
+        />
       </View>
       <View style={{backgroundColor: '#fff', padding: 20, borderRadius: 15}}>
         <Dropdown
@@ -98,7 +133,11 @@ const TranslationSettingsScreen = ({navigation}) => {
                   [
                     {
                       text: '확인',
-                      onPress: () => {
+                      onPress: async () => {
+                        await getUsers();
+                        handleButtonPress();
+                        console.log('uid: ', uid);
+                        console.log('email: ', email);
                         navigation.navigate('Chatting', {
                           languageName: languageName,
                           categoryName: categoryName,
@@ -107,6 +146,8 @@ const TranslationSettingsScreen = ({navigation}) => {
                             categoryCode === 'default' ? '' : categoryCode,
                           Language: languages,
                           Category: categorys,
+                          uid: uid,
+                          name: email,
                         });
 
                         RemoveMessages();
@@ -115,6 +156,8 @@ const TranslationSettingsScreen = ({navigation}) => {
                         setLanguageName('');
                         setCategoryCode(null);
                         setCategoryName('');
+                        setChanner(channerText);
+                        setChannerText('');
                       },
                       style: 'default',
                     },
@@ -152,11 +195,15 @@ const styles = StyleSheet.create({
   },
   logo: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
   },
   logoText: {
     fontSize: 20,
     color: '#1976D2', //white
+  },
+  chattingCode: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dropdown: {
     height: 50,
