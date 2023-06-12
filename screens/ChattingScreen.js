@@ -55,7 +55,7 @@ const ChattingScreen = ({route, navigation}) => {
   const [fileTitle, setFileTitle] = useState('');
   const [fileDepartment, setFileDepartment] = useState('');
 
-  const {channer, AddMessage, message} = useContext(STTContext);
+  const {setMessage, channer, AddMessage, message} = useContext(STTContext);
 
   const nextId = useRef(1);
   const uid = route.params.uid;
@@ -119,7 +119,9 @@ const ChattingScreen = ({route, navigation}) => {
     );
 
     msg.text += '\n\n' + text;
-    sourceLanguage === 'ko' ? AddMessage(msg.text) : AddMessage(text);
+    sourceLanguage === 'ko'
+      ? AddMessage('사용자: ' + msg.text)
+      : AddMessage(text);
 
     nextId.current += 1;
     const usermsg = {
@@ -318,11 +320,10 @@ const ChattingScreen = ({route, navigation}) => {
   };
 
   const onTranslate = async msg => {
-    const sourceLanguage =
-      languageCode.substr(0, 2) === 'ko' ? languageCode.substr(0, 2) : 'ko';
+    console.log('msg: ', msg);
+    const sourceLanguage = languageCode.substr(0, 2) === 'ko' ? 'en' : 'ko';
 
-    const targetLanguage =
-      languageCode.substr(0, 2) === 'ko' ? 'ko' : languageCode.substr(0, 2);
+    const targetLanguage = languageCode.substr(0, 2) === 'ko' ? 'ko' : 'en'; //languageCode.substr(0, 2)
 
     const translateText = await translate(
       msg.text,
@@ -349,12 +350,17 @@ const ChattingScreen = ({route, navigation}) => {
     ]);
   }, []);
 
+  const [ttext, setttext] = useState('');
   const onSend = useCallback(
     async msgArray => {
       const msg = msgArray[0];
-      const text = await onTranslate(msg);
-      AddMessage(msg.text);
+      const t = msg.text;
+      //AddMessage('사용자: ' + msg.text);
+      const textPromise = Promise.resolve(onTranslate(msg));
+      const text = await textPromise;
+      setttext(text);
       msg.text += '\n\n' + text;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       const usermsg = {
         ...msg,
         sentBy: user.uid,
@@ -371,6 +377,7 @@ const ChattingScreen = ({route, navigation}) => {
         .doc(chatid)
         .collection('messages')
         .add({...usermsg, createdAt: firestore.FieldValue.serverTimestamp()});
+      AddMessage('사용자:\n' + t);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [uid, user.uid, AddMessage],
@@ -393,12 +400,53 @@ const ChattingScreen = ({route, navigation}) => {
           };
         });
         setMessages(allTheMsgs);
+        //console.log('allTheMsgs: ', allTheMsgs);
+        // let receiveMsg;
+        // let splitMsg;
+        // if (allTheMsgs[0]) {
+        //   receiveMsg = allTheMsgs[0].text;
+        //   splitMsg = receiveMsg.split('\n\n')[1];
+        // }
+
+        if (message.length === 0 && allTheMsgs[0]) {
+          const today = new Date().toISOString().slice(0, 10);
+
+          const filteredArray = allTheMsgs.filter(item => {
+            const createdAt = new Date(item.createdAt)
+              .toISOString()
+              .slice(0, 10);
+            return createdAt === today;
+          });
+
+          const reversedArray = filteredArray.reverse();
+
+          const processedArray = reversedArray.map(item => {
+            const {sentTo, text} = item;
+            const splitText = text.split('\n\n');
+            const processedText =
+              sentTo === user.uid
+                ? '상대측:\n' + splitText[1]
+                : '사용자:\n' + splitText[0];
+            return processedText;
+          });
+          setMessage(processedArray);
+          console.log('processedArray: ', processedArray);
+        } else {
+          allTheMsgs[0].sentTo === user.uid
+            ? AddMsg('상대측:\n' + allTheMsgs[0].text.split('\n\n')[1])
+            : () => {};
+        }
       });
 
     return () => {
       unsubscribe(); // 컴포넌트가 언마운트될 때 구독 해제
     };
-  }, [uid, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid, user, ttext, message.length, setMessage]);
+
+  const AddMsg = text => {
+    AddMessage(text);
+  };
 
   return (
     <SafeAreaView style={styles.Container}>
