@@ -5,20 +5,30 @@ const STTContext = createContext();
 
 export const STTContextProvider = ({children}) => {
   const [channer, setChanner] = useState('');
-  const [message, setMessages] = useState(['']);
+  const [message, setMessage] = useState([]);
 
   const AddMessage = text => {
-    setMessages(prevMessages => [...prevMessages, text]);
+    //console.log('AddMessage 추가한 text: ', text);
+    text === undefined
+      ? console.log('입력된 text 없음')
+      : setMessage(prevMessages => [...prevMessages, text]);
     console.log('message: ', message);
   };
 
   const RemoveMessages = () => {
-    setMessages(['']);
+    setMessage([]);
   };
 
   return (
     <STTContext.Provider
-      value={{message, channer, setChanner, AddMessage, RemoveMessages}}>
+      value={{
+        message,
+        channer,
+        setMessage,
+        setChanner,
+        AddMessage,
+        RemoveMessages,
+      }}>
       {children}
     </STTContext.Provider>
   );
