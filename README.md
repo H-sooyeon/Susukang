@@ -8,10 +8,10 @@
 팀: 3명 - FE 1, BE 2
 
 </br>
-</br>
 
 **Frontend**
 - ReactNative
+- Rest API
 
 </br>
 
@@ -28,6 +28,7 @@
 - SpringBoot
 - H2 Database
 - AWS
+- Rest API
 
 </br>
 
